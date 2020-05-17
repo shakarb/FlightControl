@@ -1,0 +1,16 @@
+﻿table {
+    height: 80%;
+    display: -moz-groupbox;
+}
+
+.dropzone {
+    background-color: whitesmoke;
+    color: lightgrey;
+    border-color: lightgray;
+}
+
+.dropzone-dragover {
+    background-color: whitesmoke;
+    color: black;
+    border-color: black;
+}
