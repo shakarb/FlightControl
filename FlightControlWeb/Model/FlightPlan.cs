@@ -35,11 +35,11 @@ namespace FlightControlWeb.Model
     {
         // Properties defenitions.
         [JsonPropertyName("longitude")]
-        public double Lon { get; set; }
+        public double Longitude { get; set; }
         [JsonPropertyName("latitude")]
-        public double Lat { get; set; }
+        public double Latitude { get; set; }
         [JsonPropertyName("date_time")]
-        public DateTime Date { get; set; }
+        public DateTime Date_time { get; set; }
 
         public Location() {}
     }
@@ -48,11 +48,11 @@ namespace FlightControlWeb.Model
     {
         // Properties defenitions.
         [JsonPropertyName("longitude")]
-        public double Lon { get; set; }
+        public double Longitude { get; set; }
         [JsonPropertyName("latitude")]
-        public double Lat { get; set; }
+        public double Latitude { get; set; }
         [JsonPropertyName("timespan_seconds")]
-        public double Timespan { get; set; }
+        public double Timespan_seconds { get; set; }
 
         public Segment() {}
     }

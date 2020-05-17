@@ -21,6 +21,19 @@ namespace FlightControlWeb.Controllers
             this.cache = cache;
         }
 
+        /*
+         * for testing
+         */
+        // GET: api/FlightPlan/listSize
+        [HttpGet("listSize")]
+        public ActionResult<int> Get()
+        {
+            var keysList = (List<string>)cache.Get("keys");
+            // Returns 200 status code.
+            return Ok(keysList.Count());
+        }
+
+
         // GET: api/FlightPlan/id
         [HttpGet("{id}", Name = "Get")]
         public ActionResult<FlightPlan> Get(string id)
@@ -28,7 +41,16 @@ namespace FlightControlWeb.Controllers
             bool isOk = cache.TryGetValue(id, out FlightPlan fp);
             if (!isOk)
             {
-                return NotFound(id);
+                // Check if it's an external flight plan.
+                // Then - return it.
+                Dictionary<string, FlightPlan> outerFP =
+                   (Dictionary<string, FlightPlan>)cache.Get("outerFlightPlans");
+                bool ok = outerFP.TryGetValue(id, out FlightPlan flightPlan);
+                if (!ok)
+                {
+                    return NotFound(id);
+                }
+                return Ok(flightPlan);
             }
             // Returns 200 status code.
             return Ok(fp);
@@ -40,17 +62,14 @@ namespace FlightControlWeb.Controllers
         {
             string key = fpDetails.GenerateId();
             cache.Set(key, fpDetails);
+
+            // Updating the keys list with a new key.
+            var keysList = (List<string>)cache.Get("keys");
+            keysList.Add(key);
+            cache.Set("keys", keysList);
+
             return CreatedAtAction(actionName: "Get", new { id = key }, fpDetails);
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
-        {
-            cache.Remove(id);
-            // Returns 204 status code which means that the server has successfully fulfilled 
-            // the request and that there is no additional content to send in the response payload body.
-            return NoContent();
-        }
     }
 }

@@ -8,9 +8,26 @@ using Microsoft.Extensions.Logging;
 namespace FlightControlWeb.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        [HttpGet("string")]
+        public ActionResult<string> Get()
+        {
+            return Ok("Hello world :)");
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/array")]
+        public ActionResult<IEnumerable<string>> OdMashehu()
+        {
+            return Ok(new[] { "Value1", "Value2" });
+        }
+            
+
+       
+
+        /*
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -34,6 +51,6 @@ namespace FlightControlWeb.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
-        }
+        }*/
     }
 }

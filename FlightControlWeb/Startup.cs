@@ -31,7 +31,6 @@ namespace FlightControlWeb
             services.AddRouting();
             services.AddControllers();
             services.AddMemoryCache();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +54,11 @@ namespace FlightControlWeb
                 endpoints.MapControllers();
             });
             List<Server> serversList = new List<Server>();
+            List<string> keysList = new List<string>();
+            Dictionary<string, FlightPlan> outerFP = new Dictionary<string, FlightPlan>();
             cache.Set("servers", serversList);
+            cache.Set("keys", keysList);
+            cache.Set("outerFlightPlans", outerFP);
         }
     }
 }
