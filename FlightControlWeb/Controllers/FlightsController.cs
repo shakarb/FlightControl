@@ -30,8 +30,7 @@ namespace FlightControlWeb.Controllers
         {
             if (Request.Query.ContainsKey("sync_all"))
             {
-                return await model.GetAllFlights(relative_to);
-                //return Ok(this.model.GetAllFlights(relative_to));
+                return Ok(await model.GetAllFlights(relative_to));
             }
             return Ok(this.model.GetOurFlights(relative_to));
         }

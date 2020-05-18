@@ -40,8 +40,7 @@ namespace FlightControlWeb.Model
                 }
                 double precent = (currentTime - startTime).TotalSeconds / currSegment.Timespan_seconds;
                 Flight newFlight = new Flight();
-                double prevLon;
-                double prevLat;
+                double prevLon, prevLat;
                 if (segNum == 0)
                 {
                     prevLon = fp.Initial_location.Longitude;
@@ -68,7 +67,7 @@ namespace FlightControlWeb.Model
         {
             // Add this server's flights.
             List<Flight> flights = new List<Flight>(GetOurFlights(currentTime));
-            var serversList = (List<Server>)cache.Get("servers");
+            List<Server> serversList = (List<Server>)cache.Get("servers");
             foreach (Server server in serversList)
             {
                 HttpClient client = new HttpClient();
@@ -97,8 +96,8 @@ namespace FlightControlWeb.Model
         }
 
 
-        // finds which segment of the flight plan contains the given time.
-        // curr will be the start time of the segment.
+        // Finds which segment of the flight plan contains the given time.
+        // Curr will be the start time of the segment.
         private Segment FindSegment(FlightPlan fp, DateTime time, ref DateTime curr, ref int segNum)
         {
             foreach (Segment segment in fp.Segments)
@@ -110,7 +109,6 @@ namespace FlightControlWeb.Model
                     return segment;
                 }else
                 {
-                    //curr.AddSeconds(segment.Timespan);
                     segNum++;
                 }
             }
