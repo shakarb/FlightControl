@@ -117,19 +117,23 @@ namespace FlightControlWeb.Model
 
         private async void GetFlightPlans(List<Flight> flights, string url, HttpClient client)
         {
-            foreach(Flight flight in flights)
+            // Get the flight plan's dictionary from the cache.
+            Dictionary<string, FlightPlan> outerFP =
+                   (Dictionary<string, FlightPlan>)cache.Get("outerFlightPlans");
+            foreach (Flight flight in flights)
             {
-                // Geting the flight plan from the server.
-                var resp = await client.GetStringAsync(url + "/api/FlightPlan/"
-                    + flight.Flight_id.ToString());
-                FlightPlan fp = JsonConvert.DeserializeObject<FlightPlan>(resp);
+                if(!outerFP.ContainsKey(flight.Flight_id))
+                {
+                    // Geting the flight plan from the server.
+                    var resp = await client.GetStringAsync(url + "/api/FlightPlan/"
+                        + flight.Flight_id.ToString());
+                    FlightPlan fp = JsonConvert.DeserializeObject<FlightPlan>(resp);
 
-                // Insert the flight plan into the outer flight plans dictionary.
-                Dictionary<string, FlightPlan> outerFP =
-                    (Dictionary<string,FlightPlan>)cache.Get("outerFlightPlans");
-                outerFP[flight.Flight_id] = fp;
-                cache.Set("outerFlightPlans", outerFP);
+                    // Insert the flight plan into the outer flight plans dictionary.
+                    outerFP[flight.Flight_id] = fp;
+                }
             }
+            cache.Set("outerFlightPlans", outerFP);
         }
 
     }
