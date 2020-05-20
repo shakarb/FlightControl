@@ -1,7 +1,15 @@
 
 var uploadButton = document.getElementById('inputFiles');
 
-
+function sendData(jsonData) {
+    //out http request
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/FlightPlan", true);
+    //define the needed header information
+    xhr.setRequestHeader("Content-Type", "application/json");
+    //sendig our jason
+    xhr.send(jsonData);
+};
 
 function readFile(file) {
     //we define a reader to read input file
@@ -10,18 +18,24 @@ function readFile(file) {
     reader.readAsText(file);
     //initial variable to hold out data from reader
     let data;
-
+    //prepare our json data for post
     reader.onload = function () {
         data = reader.result.replace('/r', '');
         console.log(data);
+        sendData(file);
     };
 
-}
+    //msg if we got an error
+    reader.onerror = function () {
+        console.log(reader.error);
+    };
+    
+};
 
 
 
 //this function first iterate our files and send them to read file function
-uploadButton.onchange =  function() {
+uploadButton.onchange = function () {
 
     let files = uploadButton.files;
     let file;
@@ -33,5 +47,5 @@ uploadButton.onchange =  function() {
         readFile(file);
     }
 
-}
+};
 
