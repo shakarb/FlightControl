@@ -60,6 +60,7 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] FlightPlan fpDetails)
         {
+            Console.WriteLine("Im in POST");
             string key = fpDetails.GenerateId();
             cache.Set(key, fpDetails);
 
