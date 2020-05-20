@@ -25,7 +25,7 @@ function GetData() {
 // Gets the flights data from the server asynchronously.
 async function GetFlightsData() {
     let date = new Date().toISOString()
-    let url = "https://localhost:44355/api/Flights?relative_to=" + date;
+    let url = "/api/Flights?relative_to=" + date;
     //let url = "https://localhost:44355/index.html/api/Flights?relative_to=" + date;
     let resp = await fetch(url);
     let FlightData = await resp.json();
@@ -90,7 +90,7 @@ function GetFlightsData(data) {
 function PostData() {
     let req1 = new XMLHttpRequest();
     //req1.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req1.open("POST", "https://localhost:44355/api/FlightPlan", false);
+    req1.open("POST", "/api/FlightPlan", false);
     req1.setRequestHeader("Content-Type", "application/json");
     let jsonObject = {
         "passengers": 150,
@@ -98,7 +98,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35,
             "latitude": 20.9,
-            "date_time": "2020-05-20T15:30:00Z"
+            "date_time": "2020-05-20T20:50:00Z"
         },
         "segments": [
             {
@@ -117,7 +117,7 @@ function PostData() {
 
     let req2 = new XMLHttpRequest();
     //req2.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req2.open("POST", "https://localhost:44355/api/FlightPlan", false);
+    req2.open("POST", "/api/FlightPlan", false);
     req2.setRequestHeader("Content-Type", "application/json");
     jsonObject = {
         "passengers": 150,
@@ -125,7 +125,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35.5,
             "latitude": 20.7,
-            "date_time": "2020-05-20T15:19:21Z"
+            "date_time": "2020-05-20T20:50:21Z"
         },
         "segments": [
             {
@@ -144,7 +144,7 @@ function PostData() {
 
     let req3 = new XMLHttpRequest();
     //req3.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req3.open("POST", "https://localhost:44355/api/FlightPlan", false);
+    req3.open("POST", "/api/FlightPlan", false);
     req3.setRequestHeader("Content-Type", "application/json");
     jsonObject = {
         "passengers": 150,
@@ -152,7 +152,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35.5,
             "latitude": 21,
-            "date_time": "2020-05-20T15:19:21Z"
+            "date_time": "2020-05-20T20:50:21Z"
         },
         "segments": [
             {
