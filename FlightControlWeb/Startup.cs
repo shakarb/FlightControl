@@ -40,6 +40,7 @@ namespace FlightControlWeb
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDefaultFiles();
 
             app.UseStaticFiles();
 
