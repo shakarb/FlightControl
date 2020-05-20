@@ -84,7 +84,8 @@
     <!-- </div> -->
     <!-- Adding the map to the web -->
     <script>
-        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        var mymap = L.map('mapid').setView([32, 35], 8);
 
         L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYeIDF2PiEdyE', {
             attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
@@ -98,6 +99,7 @@
 
     </script>
     <script src="js/upLoad.js"></script>
+    <script src="js/GetFlightsData.js"></script>
 
 </body>
 </html>
