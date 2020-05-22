@@ -44,7 +44,7 @@ namespace FlightControlWeb.Model
                 if (segNum == 0)
                 {
                     prevLon = fp.Initial_location.Longitude;
-                    prevLat = fp.Initial_location.Longitude;
+                    prevLat = fp.Initial_location.Latitude;
                 }
                 else
                 {
