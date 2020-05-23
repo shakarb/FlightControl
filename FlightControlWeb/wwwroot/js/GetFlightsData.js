@@ -23,6 +23,9 @@ var greenIcon = new L.icon({
 */
 GetData();
 
+//our map icon definition
+
+
 
 setInterval(function () {
     GetData();
@@ -55,13 +58,12 @@ function SendData(data) {
 
 function onClick(e) {
     console.log(markerIdDict[this]);
-    console.log(markerIdDict[e]);
+    //console.log(e);
 }
 
 // Draws the icon for every flight.
 function DrawIcons(data) {
-
-    var flightsID = [];
+     var flightsID = [];
 
     for (let i = 0; i < data.length; i++) {
         let lon = data[i]["longitude"];
@@ -72,11 +74,13 @@ function DrawIcons(data) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
             //let marker = L.marker([31.771959, 35.217018], { icon: mapIcon } );
-            let marker = L.marker([lat, lon]);
+            let marker = new L.marker([lat, lon]).on('click', onClick);
             //marker.bindPopup('hi');
-            marker.addTo(mymap).on('click', onClick);;
+            marker.addTo(mymap);
             console.log("adding flight");
             iconFlightsDict[data[i]["flight_id"]] = marker;
+                
+            console.log(data[i]["flight_id"]);
             markerIdDict[marker] = data[i]["flight_id"];
         }
         flightsID.push(data[i]["flight_id"]);

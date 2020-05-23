@@ -12,6 +12,8 @@ function sendData(jsonData) {
 };
 
 function readFile(file) {
+    console.log('on eadFile');
+
     //we define a reader to read input file
     let reader = new FileReader();
     //read file as text
@@ -35,8 +37,8 @@ function readFile(file) {
 
 
 //this function first iterate our files and send them to read file function
-uploadButton.onchange = function () {
-
+uploadButton.onchange = function (event) {
+    console.log('on OnChnge');
     let files = uploadButton.files;
     let file;
 
@@ -46,6 +48,6 @@ uploadButton.onchange = function () {
         file = files[x];
         readFile(file);
     }
-
+    event.target.value = '';
 };
 
