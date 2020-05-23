@@ -57,7 +57,7 @@ function SendData(data) {
 }
 
 function onClick(e) {
-    console.log(markerIdDict[this]);
+    console.log(markerIdDict[e]);
     //console.log(e);
 }
 
@@ -74,8 +74,14 @@ function DrawIcons(data) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
             //let marker = L.marker([31.771959, 35.217018], { icon: mapIcon } );
-            let marker = new L.marker([lat, lon]).on('click', onClick);
+            let marker = new L.marker([lat, lon])
             //marker.bindPopup('hi');
+            
+            marker.on('click', function () {
+                var id = data[i]["flight_id"];
+                console.log(id);
+            });
+            marker.id = data[i]["flight_id"];
             marker.addTo(mymap);
             console.log("adding flight");
             iconFlightsDict[data[i]["flight_id"]] = marker;
