@@ -1,5 +1,18 @@
 ﻿PostData();
 let iconFlightsDict = {};
+
+let markerIdDict = {};
+
+let myFlightsTable = document.getElementById('myFlightsTable');
+
+let clickedFlightInfo = document.getElementById('myFlightsTable');
+
+let clickedMarker;
+
+let isMarkerClicked;
+
+//
+
 /*
 var greenIcon = new L.icon({
     iconUrl: 'airplane.jpg',
@@ -39,19 +52,42 @@ function SendData(data) {
 
 }
 
+function onClick(e) {
+    console.log(markerIdDict[this]);
+    console.log(markerIdDict[e]);
+}
+
 // Draws the icon for every flight.
 function DrawIcons(data) {
+
+    var flightsID = [];
+
     for (let i = 0; i < data.length; i++) {
         let lon = data[i]["longitude"];
         let lat = data[i]["latitude"];
+        //console.log(lon + " , " + lat);
         // If the flight exists already then just update it's marker, else - create new one.
         if (data[i]["flight_id"] in iconFlightsDict) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
             //let marker = L.marker([31.771959, 35.217018], { icon: mapIcon } );
             let marker = L.marker([lat, lon]);
-            marker.addTo(mymap);
+            //marker.bindPopup('hi');
+            marker.addTo(mymap).on('click', onClick);;
+            console.log("adding flight");
             iconFlightsDict[data[i]["flight_id"]] = marker;
+            markerIdDict[marker] = data[i]["flight_id"];
+        }
+        flightsID.push(data[i]["flight_id"]);
+        //console.log(data[i]["flight_id"]);
+    }
+
+     ////iterate over our flights markers
+    for (var flight in iconFlightsDict) {
+        //if flight no in new flights data need to remove her
+        if (!flightsID.includes(flight)) {
+            //console.log(flightsID.length);
+            mymap.removeLayer(iconFlightsDict[flight]);
         }
     }
 }
