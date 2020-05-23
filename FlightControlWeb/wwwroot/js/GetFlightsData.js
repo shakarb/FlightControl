@@ -13,6 +13,7 @@ let isMarkerClicked;
 
 //
 
+let writtenFlights = [];
 /*
 var greenIcon = new L.icon({
     iconUrl: 'airplane.jpg',
@@ -94,7 +95,46 @@ function DrawIcons(data) {
 
 // Display the flights in the corresponding tables.
 function DisplayFlights(data) {
+    // CuurentFlights will contain all the flight's ids that in data.
+    let currentFlights = [];
+    for (let i = 0; i < data.length; i++) {
+        currentFlights.push(data[i]["flight_id"]);
+    }
+    // Remove all the flights which finished to fly.
+    for (let id of writtenFlights) {
+        if (!(currentFlights.includes(id))) {
+            // Remove from table.
+            let flightId = document.getElementById(id);
+            flightId.remove();
+            // Remove from list.
+            const index = writtenFlights.indexOf(id);
+            writtenFlights.splice(index, 1);
+        }
+    }
 
+    for (let i = 0; i < data.length; i++) {
+        let id = data[i]["flight_id"];
+        if (!(writtenFlights.includes(id))) {
+            writtenFlights.push(id);
+            let airLine = data[i]["company_name"];
+            let arrivalTime = data[i]["date_time"];
+
+            let s = "<th style =\"font-size : x-small\">" + id + "</th>" +
+                "<th style =\"font-size : x-small\">" + arrivalTime + "</th>" +
+                "<th style =\"font-size : x-small\">" + airLine + "</th>";
+            let table;
+            if (data[i]["is_external"] === false) {
+                table = document.getElementById("myFlightsBody");
+                
+            } else {
+                table = document.getElementById("externalFlightsTable");
+            }
+            let newItem = document.createElement('tr');
+            newItem.id = id;
+            newItem.innerHTML = s;
+            table.append(newItem);
+        }
+    }
 }
 
 /*
@@ -134,18 +174,18 @@ function PostData() {
         "initial_location": {
             "longitude": 35,
             "latitude": 20.9,
-            "date_time": "2020-05-20T20:50:00Z"
+            "date_time": "2020-05-22T18:52:00Z"
         },
         "segments": [
             {
-                "longitude": 35,
-                "latitude": 20.9,
-                "timespan_seconds": 600.0
+                "longitude": 39,
+                "latitude": 25,
+                "timespan_seconds": 20.0
             }, 
             {
-                "longitude": 35.5,
-                "latitude": 20.9,
-                "timespan_seconds": 600.0
+                "longitude": 43,
+                "latitude": 27.8,
+                "timespan_seconds": 10.0
             }
         ]
     };
@@ -161,18 +201,18 @@ function PostData() {
         "initial_location": {
             "longitude": 35.5,
             "latitude": 20.7,
-            "date_time": "2020-05-20T20:50:21Z"
+            "date_time": "2020-05-22T18:52:20Z"
         },
         "segments": [
             {
-                "longitude": 35.5,
-                "latitude": 20.7,
-                "timespan_seconds": 60.0
+                "longitude": 37.5,
+                "latitude": 31.7,
+                "timespan_seconds": 20.0
             },
             {
-                "longitude": 35.5,
-                "latitude": 21,
-                "timespan_seconds": 60.0
+                "longitude": 38.5,
+                "latitude": 33,
+                "timespan_seconds": 10.0
             }
         ]
     };
@@ -186,20 +226,20 @@ function PostData() {
         "passengers": 150,
         "company_name": "SwissAir",
         "initial_location": {
-            "longitude": 35.5,
-            "latitude": 21,
-            "date_time": "2020-05-20T20:50:21Z"
+            "longitude": 35.0,
+            "latitude": 32.0,
+            "date_time": "2020-05-22T18:52:00Z"
         },
         "segments": [
             {
-                "longitude": 35.5,
-                "latitude": 21,
-                "timespan_seconds": 100.0
+                "longitude": 35,
+                "latitude": 34,
+                "timespan_seconds": 6.0
             },
             {
-                "longitude": 35.5,
-                "latitude": 20.5,
-                "timespan_seconds": 100.0
+                "longitude": 36,
+                "latitude": 34.6,
+                "timespan_seconds": 7.0
             }
         ]
     };
