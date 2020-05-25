@@ -7,9 +7,7 @@ let myFlightsTable = document.getElementById('myFlightsTable');
 
 let clickedFlightInfo = document.getElementById('myFlightsTable');
 
-let clickedMarker;
 
-let isMarkerClicked;
 
 //
 
@@ -21,6 +19,14 @@ var greenIcon = new L.icon({
 
 });
 */
+
+let myIconReplc = L.Icon.extend({
+    options: {
+        iconUrl: "plan.png",
+    iconSize: [38, 95] // size of the icon
+    }
+});
+
 GetData();
 
 //our map icon definition
@@ -56,9 +62,101 @@ function SendData(data) {
 
 }
 
-function onClick(e) {
-    console.log(markerIdDict[e]);
-    //console.log(e);
+
+
+let clickedMarker;
+
+let isMarkerClicked;
+
+let clickedMarkerId;
+
+let clickedMarkerLine;
+
+//Mark the right line in the table
+function markTableLine(id) {
+    clickedMarkerLine = document.getElementById(id);
+    clickedMarkerLine.style.backgroundColor = "lightgrey";
+}
+
+function fillFlightInfoTable(data) {
+
+    let segArray = data["segments"];
+    let lastSeg = segArray[segArray.length - 1];
+    //getting data from the data jdon object
+    let flightId = clickedMarkerId;
+    let airLine = data["company_name"];
+    let dateTime = data["initial_location"]["date_time"];
+    let startingLat = data["initial_location"]["latitude"];
+    let startingLong = data["initial_location"]["longitude"];
+    let endLat = lastSeg["latitude"];
+    let endLong = lastSeg["longitude"];
+    let passengers = data["passengers"];
+    //initial inner table elements
+    let s = "<th style =\"font-size : x-small\">" + flightId + "</th>" +
+        "<th style =\"font-size : x-small\">" + airLine + "</th>" +
+        "<th style =\"font-size : x-small\">" + startingLat.toFixed(2) + "," + startingLong.toFixed(2) + "</th>" +
+        "<th style =\"font-size : x-small\">" + endLat.toFixed(2) + "," + endLong.toFixed(2)  + "</th>" +
+        "<th style =\"font-size : x-small\">" + passengers + "</th>" + 
+        "<th style =\"font-size : x-small\">" + dateTime + "</th>";
+
+    let table = document.getElementById("clickedFlight");
+    
+    let newItem = document.createElement('tr');
+    //newItem.id = id;
+    newItem.innerHTML = s;
+    table.innerHTML = " ";
+    table.append(newItem);}
+
+
+let latlngs = []
+
+function drawFlightLines(data) {
+    //free old data
+    while (latlngs.length > 0) {
+        latlngs.pop();
+    }
+
+    let segArray = data["segments"];
+    //pushing initial location point
+    latlngs.push([data["initial_location"]["latitude"], data["initial_location"]["longitude"]]);
+    //pushing segments points
+    for (let i = 0; i < segArray.length; i++) {
+        latlngs.push([segArray[i]["latitude"],segArray[i]["longitude"]]);
+    }
+
+    let polylines = L.polyline(latlngs, { color: 'red' }).addTo(mymap);
+    console.log("before del");
+    //mymap.removeLayer(polylines);    
+}
+
+
+function initialClickedEvent(data, id) {
+    //if this marker last clicked , not need to initial again.
+    if (id == clickedMarkerId) {
+        return;
+    } else {
+        clickedMarkerId = id;
+        markTableLine(id);
+        fillFlightInfoTable(data);
+        drawFlightLines(data);
+    }
+}
+
+
+function getFlightPlan(id) {
+    try {
+        GetSingleFlightData(id).then(value => initialClickedEvent(value,id));
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// Gets the flights data from the server asynchronously.
+async function GetSingleFlightData(id) {
+    let url = "/api/FlightPlan/" + id;
+    let resp = await fetch(url);
+    let FlightData = await resp.json();
+    return FlightData;
 }
 
 // Draws the icon for every flight.
@@ -66,33 +164,38 @@ function DrawIcons(data) {
      var flightsID = [];
 
     for (let i = 0; i < data.length; i++) {
+        //getting marker point dara
         let lon = data[i]["longitude"];
         let lat = data[i]["latitude"];
-        //console.log(lon + " , " + lat);
         // If the flight exists already then just update it's marker, else - create new one.
         if (data[i]["flight_id"] in iconFlightsDict) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
             //let marker = L.marker([31.771959, 35.217018], { icon: mapIcon } );
             let marker = new L.marker([lat, lon])
-            //marker.bindPopup('hi');
             
+            /*
+             * mark click event handler anonymouse function
+             */ 
             marker.on('click', function () {
                 var id = data[i]["flight_id"];
-                console.log(id);
+                //console.log(id);
+                isMarkerClicked = true;
+                clickedMarker = marker;
+                //this function handle the click mark event logic.
+                getFlightPlan(id);
             });
-            marker.id = data[i]["flight_id"];
+            //add marker to map
             marker.addTo(mymap);
-            console.log("adding flight");
             iconFlightsDict[data[i]["flight_id"]] = marker;
-                
-            console.log(data[i]["flight_id"]);
-            markerIdDict[marker] = data[i]["flight_id"];
         }
         flightsID.push(data[i]["flight_id"]);
         //console.log(data[i]["flight_id"]);
     }
 
+    if (isMarkerClicked == true) {
+        //here need to update clicked marker lines
+    }
      ////iterate over our flights markers
     for (var flight in iconFlightsDict) {
         //if flight no in new flights data need to remove her
@@ -146,28 +249,6 @@ function DisplayFlights(data) {
         }
     }
 }
-
-/*
-setInterval(function () {
-    GetFlightsData();
-}, 250);*/
-// Gets the flights data from the server 4 times per a second.
-/*
-function GetFlightsData(data) {
-
-    let req = new XMLHttpRequest();
-    let date = new Date().toISOString()
-    let url = "https://localhost:44355/index.html/api/Flights?relative_to=" + date;
-    req.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            let FlightData = JSON.parse(this.responseText);
-            DrawIcon(FlightData);
-        }
-    };
-    req.open('GET', url, true);
-    req.send();
-}*/
-
 
 
 /*
