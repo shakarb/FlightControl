@@ -106,6 +106,9 @@ function onMapClick(e) {
 
 //Mark the right line in the table
 function markTableLine(id) {
+    if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
+        removeMarkerLine();
+    }
     clickedMarkerLine = document.getElementById(id);
     clickedMarkerLine.style.backgroundColor = "lightgrey";
 }
