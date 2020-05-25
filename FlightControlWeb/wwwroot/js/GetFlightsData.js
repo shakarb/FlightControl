@@ -115,7 +115,6 @@ function drawFlightLines(data) {
     while (latlngs.length > 0) {
         latlngs.pop();
     }
-
     let segArray = data["segments"];
     //pushing initial location point
     latlngs.push([data["initial_location"]["latitude"], data["initial_location"]["longitude"]]);
