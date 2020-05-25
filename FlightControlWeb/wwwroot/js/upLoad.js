@@ -24,7 +24,7 @@ function readFile(file) {
     reader.onload = function () {
         data = reader.result.replace('/r', '');
         console.log(data);
-        sendData(file);
+        sendData(data);
     };
 
     //msg if we got an error

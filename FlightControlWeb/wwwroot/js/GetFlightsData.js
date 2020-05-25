@@ -1,24 +1,28 @@
 ﻿PostData();
 let iconFlightsDict = {};
-
-let markerIdDict = {};
-
-let myFlightsTable = document.getElementById('myFlightsTable');
-
-let clickedFlightInfo = document.getElementById('myFlightsTable');
-
-
-
-//
-
 let writtenFlights = [];
-/*
-var greenIcon = new L.icon({
-    iconUrl: 'airplane.jpg',
-    iconSize: [38, 95] // size of the icon
+let latlngs = [];
+let polylines;
+let clickedMarker;
+let isMarkerClicked;
+let clickedMarkerId;
+let clickedMarkerLine;
 
-});
-*/
+// Initial the map
+var mymap = L.map('mapid').setView([32, 35], 8);
+
+L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYeIDF2PiEdyE', {
+    attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+    maxZoom: 12,
+    minZoom: 1,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'your.mapbox.access.token'
+}).addTo(mymap);
+// Define map click event handler
+mymap.on('click', onMapClick);
+
 
 let myIconReplc = L.Icon.extend({
     options: {
@@ -63,14 +67,42 @@ function SendData(data) {
 }
 
 
+// Function to remove clicked mark 
+function removeMarker(marker) {
+    mymap.removeLayer(marker);
+}
+// Function to remove clicked mark route lines
+function deleteLinesFromMap() {
+    mymap.removeLayer(polylines); 
+}
+// Function to remove clicked mark table light light up.
+function removeMarkerLine() {
+    clickedMarkerLine.style.backgroundColor = "lightblue";
+}
+// Function to empty info table
+function resetInfoTable() {
 
-let clickedMarker;
+    let table = document.getElementById("clickedFlight");
 
-let isMarkerClicked;
+    table.innerHTML = " ";
+}
 
-let clickedMarkerId;
+// Map click event handler
+function onMapClick(e) {
+    if (isMarkerClicked) {
 
-let clickedMarkerLine;
+        deleteLinesFromMap();
+        removeMarkerLine();
+        resetInfoTable();
+
+        isMarkerClicked = false;
+        clickedMarker = null;
+        clickedMarkerId = null;
+        clickedMarkerLine = null;
+    }
+
+}
+
 
 //Mark the right line in the table
 function markTableLine(id) {
@@ -78,6 +110,7 @@ function markTableLine(id) {
     clickedMarkerLine.style.backgroundColor = "lightgrey";
 }
 
+// This function fill the clicked flight info table
 function fillFlightInfoTable(data) {
 
     let segArray = data["segments"];
@@ -108,9 +141,13 @@ function fillFlightInfoTable(data) {
     table.append(newItem);}
 
 
-let latlngs = []
 
+// This function draw that clicked flight marker route
 function drawFlightLines(data) {
+    // Remove all lines
+    if (latlngs.length > 0 && polylines != undefined) {
+        deleteLinesFromMap()
+    }
     //free old data
     while (latlngs.length > 0) {
         latlngs.pop();
@@ -123,9 +160,7 @@ function drawFlightLines(data) {
         latlngs.push([segArray[i]["latitude"],segArray[i]["longitude"]]);
     }
 
-    let polylines = L.polyline(latlngs, { color: 'red' }).addTo(mymap);
-    console.log("before del");
-    //mymap.removeLayer(polylines);    
+    polylines = L.polyline(latlngs, { color: 'red' }).addTo(mymap);
 }
 
 
