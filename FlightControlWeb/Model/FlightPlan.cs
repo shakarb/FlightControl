@@ -4,14 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightControlWeb.Model
 {
     public class FlightPlan
     {
         // Properties defenitions.
+        // Mark required for all fields.
+        [JsonProperty(Required = Required.Always)]
         [JsonPropertyName("passengers")]
-        public int Passengers { get; set; }
+        [Range(0, Int32.MaxValue - 1)]
+        public int Passengers { get; set; } = -1;
         [JsonPropertyName("company_name")]
         public string Company_name { get; set; }
 
@@ -21,7 +26,9 @@ namespace FlightControlWeb.Model
         [JsonPropertyName("segments")]
         public List<Segment> Segments { get; set; }
                 
-        public FlightPlan() {}
+        public FlightPlan() {
+
+        }
 
         // Generates flight id for cache entry.
         public string GenerateId()
@@ -34,6 +41,7 @@ namespace FlightControlWeb.Model
     public class Location
     {
         // Properties defenitions.
+        [JsonProperty(Required = Required.Always)]
         [JsonPropertyName("longitude")]
         public double Longitude { get; set; }
         [JsonPropertyName("latitude")]
@@ -47,12 +55,14 @@ namespace FlightControlWeb.Model
     public class Segment
     {
         // Properties defenitions.
+        [JsonProperty(Required = Required.Always)]
         [JsonPropertyName("longitude")]
         public double Longitude { get; set; }
         [JsonPropertyName("latitude")]
         public double Latitude { get; set; }
         [JsonPropertyName("timespan_seconds")]
-        public double Timespan_seconds { get; set; }
+        [Range(0, Int32.MaxValue - 1)]
+        public double Timespan_seconds { get; set; } = -1;
 
         public Segment() {}
     }
