@@ -8,9 +8,22 @@ let isMarkerClicked;
 let clickedMarkerId;
 let clickedMarkerLine;
 
+
+// Define my flights map icon
+let flightIcon = L.icon({
+    iconUrl: 'https://img.icons8.com/plasticine/100/000000/airport.png',
+    iconSize : [35, 35],
+})
+
+// Define external flights map icon
+let externalFlightIcon = L.icon({
+    iconUrl: 'https://img.icons8.com/dusk/64/000000/airport.png',
+    iconSize: [40, 40],
+})
+
+
 // Initial the map
 var mymap = L.map('mapid').setView([32, 35], 8);
-
 L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYeIDF2PiEdyE', {
     attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     maxZoom: 12,
@@ -90,7 +103,7 @@ function resetInfoTable() {
 // Map click event handler
 function onMapClick(e) {
     if (isMarkerClicked) {
-
+        clickedMarker.setIcon(flightIcon);
         deleteLinesFromMap();
         removeMarkerLine();
         resetInfoTable();
@@ -104,7 +117,7 @@ function onMapClick(e) {
 }
 
 
-//Mark the right line in the table
+// Mark the right line in the table
 function markTableLine(id) {
     if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
         removeMarkerLine();
@@ -118,7 +131,7 @@ function fillFlightInfoTable(data) {
 
     let segArray = data["segments"];
     let lastSeg = segArray[segArray.length - 1];
-    //getting data from the data jdon object
+    // Getting data from the data jdon object
     let flightId = clickedMarkerId;
     let airLine = data["company_name"];
     let dateTime = data["initial_location"]["date_time"];
@@ -127,7 +140,7 @@ function fillFlightInfoTable(data) {
     let endLat = lastSeg["latitude"];
     let endLong = lastSeg["longitude"];
     let passengers = data["passengers"];
-    //initial inner table elements
+    // Initial inner table elements
     let s = "<th style =\"font-size : x-small\">" + flightId + "</th>" +
         "<th style =\"font-size : x-small\">" + airLine + "</th>" +
         "<th style =\"font-size : x-small\">" + startingLat.toFixed(2) + "," + startingLong.toFixed(2) + "</th>" +
@@ -138,7 +151,6 @@ function fillFlightInfoTable(data) {
     let table = document.getElementById("clickedFlight");
     
     let newItem = document.createElement('tr');
-    //newItem.id = id;
     newItem.innerHTML = s;
     table.innerHTML = " ";
     table.append(newItem);}
@@ -151,27 +163,29 @@ function drawFlightLines(data) {
     if (latlngs.length > 0 && polylines != undefined) {
         deleteLinesFromMap()
     }
-    //free old data
+    // Free old data
     while (latlngs.length > 0) {
         latlngs.pop();
     }
     let segArray = data["segments"];
-    //pushing initial location point
+    // Pushing initial location point
     latlngs.push([data["initial_location"]["latitude"], data["initial_location"]["longitude"]]);
-    //pushing segments points
+    // Pushing segments points
     for (let i = 0; i < segArray.length; i++) {
         latlngs.push([segArray[i]["latitude"],segArray[i]["longitude"]]);
     }
 
-    polylines = L.polyline(latlngs, { color: 'red' }).addTo(mymap);
+    polylines = L.polyline(latlngs, { color: 'lightgrey' }).addTo(mymap);
 }
 
-
+// This function Handle the click on idon event
 function initialClickedEvent(data, id) {
-    //if this marker last clicked , not need to initial again.
+    isMarkerClicked = true;
+    // If this marker last clicked , no need to initial again.
     if (id == clickedMarkerId) {
         return;
     } else {
+        clickedMarker.setIcon(externalFlightIcon);
         clickedMarkerId = id;
         markTableLine(id);
         fillFlightInfoTable(data);
@@ -188,7 +202,7 @@ function getFlightPlan(id) {
     }
 }
 
-// Gets the flights data from the server asynchronously.
+// Gets the flight data from the server asynchronously.
 async function GetSingleFlightData(id) {
     let url = "/api/FlightPlan/" + id;
     let resp = await fetch(url);
@@ -201,43 +215,40 @@ function DrawIcons(data) {
      var flightsID = [];
 
     for (let i = 0; i < data.length; i++) {
-        //getting marker point dara
+        // Getting marker point dara
         let lon = data[i]["longitude"];
         let lat = data[i]["latitude"];
         // If the flight exists already then just update it's marker, else - create new one.
         if (data[i]["flight_id"] in iconFlightsDict) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
-            //let marker = L.marker([31.771959, 35.217018], { icon: mapIcon } );
-            let marker = new L.marker([lat, lon])
+
+            let marker = L.marker([lat, lon], { icon: flightIcon });
             
-            /*
-             * mark click event handler anonymouse function
-             */ 
+            let id = data[i]["flight_id"];
+            
+            // Mark click event handler anonymouse function
             marker.on('click', function () {
-                var id = data[i]["flight_id"];
-                //console.log(id);
-                isMarkerClicked = true;
                 clickedMarker = marker;
-                //this function handle the click mark event logic.
+                // This function handle the click mark event logic.
                 getFlightPlan(id);
             });
-            //add marker to map
+
+            // Add marker to map
             marker.addTo(mymap);
+            //marker.setIcon(externalFlightIcon);
             iconFlightsDict[data[i]["flight_id"]] = marker;
         }
         flightsID.push(data[i]["flight_id"]);
-        //console.log(data[i]["flight_id"]);
     }
 
     if (isMarkerClicked == true) {
         //here need to update clicked marker lines
     }
-     ////iterate over our flights markers
+     // Iterate over our flights markers
     for (var flight in iconFlightsDict) {
-        //if flight no in new flights data need to remove her
+        // If flight no in new flights data need to remove her
         if (!flightsID.includes(flight)) {
-            //console.log(flightsID.length);
             mymap.removeLayer(iconFlightsDict[flight]);
         }
     }
@@ -287,10 +298,10 @@ function DisplayFlights(data) {
     }
 }
 
-
 /*
  * PostData is only for testing.
  */
+
 function PostData() {
     let req1 = new XMLHttpRequest();
     //req1.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);

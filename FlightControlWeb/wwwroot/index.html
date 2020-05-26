@@ -25,14 +25,14 @@
     <div class="row" style="height: 550px; margin:5px;">
         <div class="col-8">
             <!-- The map div -->
-            <div class="rounded" id="mapid" style="float: left;height: 100% ; width: 100%; margin:5px">
+            <div class="rounded" id="mapid" style="float: left;height: 100% ; width: 100%;">
 
             </div>
             <div class="row" style="height: 30%">
                 <!-- The flight information div -->
-                <div class="col rounded" style="float:left; clear: left; border: solid; width: 80%;margin:5px">
+                <div class="container-fluid rounded" style="border: solid; width: 100%;margin:5px;">
                     <h5 class="text-center">Flight Details</h5>
-                    <table class="table table-responsive table-hover" id="clickedFlightTable">
+                    <table class="table table-responsive table-hover mx-auto w-auto" id="clickedFlightTable" style="margin:auto">
                         <thead>
                             <tr>
                                 <th>Flight ID</th>
@@ -51,13 +51,6 @@
         </div>
         <!-- The right bar all flights information div -->
         <div class="col-4 pr-5" style="z-index: 2; height:100%">
-            <!-- drag and drop  -->
-            <!-- <div class="row overlay-div pr-3" id="dropzone" style="border:dashed ;border-width: 3px;border-color: lightgray;
-    background-color: whitesmoke; height: 100%; width: 100%; display:none" >
-        <div style="display: table;width: 100%;height: 100%; vertical-align: middle;">
-            <h4 style="vertical-align: middle; display:table-cell; ">Drop to upload your files</h4>
-        </div>
-    </div> -->
             <!-- My flights info sheet -->
             <div class="container rounded" id="myFlights" style="height: 50%; border: solid; margin:5px">
                 <h4 class="text-center">My Flights</h4>
@@ -91,27 +84,10 @@
             <div class="container rounded" style="height:auto; border:none; margin:5px" id="dragToDiv;">
                 <form enctype="multipart/form-data" method="post" action="/js/" style="padding:50px">
                     <input type="file" id="inputFiles" accept="application/json" ondrop="onchange" />
-                    <!--<button type="button" id="customButton">Drag a File</button>
-            <script>
-                const dragArea = document.getElementById("dragToDiv");
-                const inputButton = document.getElementById("inputFiles");
-                const customBtn = document.getElementById("customButton");
-                customBtn.addEventListener("ondrop", function (e) {
-                    inputButton.ondrop(e);
-                });
-                customBtn.addEventListener("drop", function (e) {
-                    inputButton.onchange(e);
-                });
-
-                customBtn.addEventListener("click", function () {
-                    inputButton.click();
-                });
-            </script>-->
                 </form>
             </div>
         </div>
     </div>
-    <!-- </div> -->
     <!-- Adding the map to the web -->
     <script>
         //var mymap = L.map('mapid').setView([51.505, -0.09], 13);
