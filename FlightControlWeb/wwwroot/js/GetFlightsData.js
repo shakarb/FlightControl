@@ -8,19 +8,17 @@ let isMarkerClicked;
 let clickedMarkerId;
 let clickedMarkerLine;
 
-
 // Define my flights map icon
 let flightIcon = L.icon({
     iconUrl: 'https://img.icons8.com/plasticine/100/000000/airport.png',
-    iconSize : [35, 35],
+    iconSize: [35, 35],
 })
 
 // Define external flights map icon
 let externalFlightIcon = L.icon({
     iconUrl: 'https://img.icons8.com/dusk/64/000000/airport.png',
-    iconSize: [40, 40],
+    iconSize: [38, 38],
 })
-
 
 // Initial the map
 var mymap = L.map('mapid').setView([32, 35], 8);
@@ -39,15 +37,14 @@ mymap.on('click', onMapClick);
 
 let myIconReplc = L.Icon.extend({
     options: {
-        iconUrl: "plan.png",
-    iconSize: [38, 95] // size of the icon
+        iconUrl: "images/plan.png",
+        iconSize: [38, 95] // size of the icon
     }
 });
 
 GetData();
 
 //our map icon definition
-
 
 
 setInterval(function () {
@@ -65,8 +62,8 @@ function GetData() {
 // Gets the flights data from the server asynchronously.
 async function GetFlightsData() {
     let date = new Date().toISOString()
-    let url = "/api/Flights?relative_to=" + date;
-    //let url = "https://localhost:44355/index.html/api/Flights?relative_to=" + date;
+    let url = "/api/Flights?relative_to=" + date + "&sync_all";
+    //let url = "https://localhost:44355/index.html/api/Flights?relative_to=" + date + "&sync_all";
     let resp = await fetch(url);
     let FlightData = await resp.json();
     return FlightData;
@@ -79,7 +76,6 @@ function SendData(data) {
 
 }
 
-
 // Function to remove clicked mark 
 function removeMarker(marker) {
     mymap.removeLayer(marker);
@@ -90,7 +86,7 @@ function deleteLinesFromMap() {
 }
 // Function to remove clicked mark table light light up.
 function removeMarkerLine() {
-    clickedMarkerLine.style.backgroundColor = "lightblue";
+    clickedMarkerLine.style.backgroundColor = "aliceblue";
 }
 // Function to empty info table
 function resetInfoTable() {
@@ -101,7 +97,7 @@ function resetInfoTable() {
 }
 
 // Map click event handler
-function onMapClick(e) {
+function onMapClick() {
     if (isMarkerClicked) {
         clickedMarker.setIcon(flightIcon);
         deleteLinesFromMap();
@@ -113,9 +109,7 @@ function onMapClick(e) {
         clickedMarkerId = null;
         clickedMarkerLine = null;
     }
-
 }
-
 
 // Mark the right line in the table
 function markTableLine(id) {
@@ -123,7 +117,7 @@ function markTableLine(id) {
         removeMarkerLine();
     }
     clickedMarkerLine = document.getElementById(id);
-    clickedMarkerLine.style.backgroundColor = "lightgrey";
+    clickedMarkerLine.style.backgroundColor = "rgb(204, 217, 255)";
 }
 
 // This function fill the clicked flight info table
@@ -185,8 +179,8 @@ function initialClickedEvent(data, id) {
     if (id == clickedMarkerId) {
         return;
     } else {
-        clickedMarker.setIcon(externalFlightIcon);
         clickedMarkerId = id;
+        clickedMarker.setIcon(externalFlightIcon);
         markTableLine(id);
         fillFlightInfoTable(data);
         drawFlightLines(data);
@@ -212,10 +206,10 @@ async function GetSingleFlightData(id) {
 
 // Draws the icon for every flight.
 function DrawIcons(data) {
-     var flightsID = [];
+     let flightsID = [];
 
     for (let i = 0; i < data.length; i++) {
-        // Getting marker point dara
+        // Getting marker point data
         let lon = data[i]["longitude"];
         let lat = data[i]["latitude"];
         // If the flight exists already then just update it's marker, else - create new one.
@@ -237,7 +231,11 @@ function DrawIcons(data) {
             // Add marker to map
             marker.addTo(mymap);
             //marker.setIcon(externalFlightIcon);
+           
             iconFlightsDict[data[i]["flight_id"]] = marker;
+                
+            //console.log(data[i]["flight_id"]);
+            //markerIdDict[marker] = data[i]["flight_id"];
         }
         flightsID.push(data[i]["flight_id"]);
     }
@@ -279,29 +277,62 @@ function DisplayFlights(data) {
             writtenFlights.push(id);
             let airLine = data[i]["company_name"];
             let arrivalTime = data[i]["date_time"];
-
-            let s = "<th style =\"font-size : x-small\">" + id + "</th>" +
-                "<th style =\"font-size : x-small\">" + arrivalTime + "</th>" +
-                "<th style =\"font-size : x-small\">" + airLine + "</th>";
+            let date = new Date(arrivalTime);
             let table;
             if (data[i]["is_external"] === false) {
-                table = document.getElementById("myFlightsBody");
-                
+                table = document.getElementById("myFlightsTable").getElementsByTagName('tbody')[0];
             } else {
-                table = document.getElementById("externalFlightsTable");
+                table = document.getElementById("externalFlightsTable").getElementsByTagName('tbody')[0];
             }
-            let newItem = document.createElement('tr');
-            newItem.id = id;
-            newItem.innerHTML = s;
-            table.append(newItem);
+            let row = table.insertRow();
+            row.id = id;
+            row.addEventListener("click", function () {
+                // The clicked merker sets to be the row's corresponding marker.
+                clickedMarker = iconFlightsDict[row.id];
+                getFlightPlan(id);
+            });
+            let cell1 = row.insertCell(0);
+            cell1.innerHTML = id;
+            let cell2 = row.insertCell(1);
+            cell2.innerHTML = date.toUTCString();
+            let cell3 = row.insertCell(2);
+            cell3.innerHTML = airLine;
+            cell1.style = cell2.style = cell3.style = "font-size : x-small";
+            if (data[i]["is_external"] === false) {
+                let cell4 = row.insertCell(3);
+                let x = document.createElement("input");
+                x.setAttribute("type", "image");
+                x.setAttribute("src", "images/Red_X.png");
+                x.setAttribute("width", 12);
+                x.setAttribute("height", 12);
+                x.addEventListener("click", function (e) {
+                    ChooseAction(id);
+                    e.stopPropagation();
+                });
+                cell4.appendChild(x);
+            }
         }
     }
+}
+
+function ChooseAction(id) {
+    if (isMarkerClicked) {
+        onMapClick();
+    } else {
+        EraseFlight(id);
+    }
+}
+
+function EraseFlight(id) {
+    fetch('/api/Flights/' + id, {
+        method: 'DELETE',
+    })
+        .then(res => console.log(res))
 }
 
 /*
  * PostData is only for testing.
  */
-
 function PostData() {
     let req1 = new XMLHttpRequest();
     //req1.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
@@ -313,7 +344,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35,
             "latitude": 20.9,
-            "date_time": "2020-05-22T18:52:00Z"
+            "date_time": "2020-05-27T12:20:00Z"
         },
         "segments": [
             {
@@ -340,7 +371,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35.5,
             "latitude": 20.7,
-            "date_time": "2020-05-22T18:52:20Z"
+            "date_time": "2020-05-27T12:20:20Z"
         },
         "segments": [
             {
@@ -367,13 +398,13 @@ function PostData() {
         "initial_location": {
             "longitude": 35.0,
             "latitude": 32.0,
-            "date_time": "2020-05-22T18:52:00Z"
+            "date_time": "2020-05-27T12:20:00Z"
         },
         "segments": [
             {
                 "longitude": 35,
                 "latitude": 34,
-                "timespan_seconds": 6.0
+                "timespan_seconds": 10.0
             },
             {
                 "longitude": 36,

@@ -28,6 +28,7 @@ namespace FlightControlWeb.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Flight>>> Get(DateTime relative_to)
         {
+            relative_to = relative_to.ToUniversalTime();
             if (Request.Query.ContainsKey("sync_all"))
             {
                 return Ok(await model.GetAllFlights(relative_to));
@@ -46,7 +47,6 @@ namespace FlightControlWeb.Controllers
             var keysList = (List<string>)cache.Get("keys");
             keysList.Remove(id);
             cache.Set("keys", keysList);
-
             // Returns 204 status code which means that the server has successfully fulfilled 
             // the request and that there is no additional content to send in the response payload body.
             return NoContent();

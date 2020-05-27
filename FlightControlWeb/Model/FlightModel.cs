@@ -79,7 +79,7 @@ namespace FlightControlWeb.Model
                 try
                 {
                     var resp = await client.GetStringAsync(server.Url + "/api/Flights?relative_to="
-                        + currentTime.ToString("yyyy-MM-ddTHH:mm:ss"));
+                        + currentTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                     outerFlights.AddRange(JsonConvert.DeserializeObject<List<Flight>>(resp));
                     GetFlightPlans(outerFlights,server.Url, client);
                 }
