@@ -14,8 +14,8 @@ let flightIcon = L.icon({
     iconSize: [35, 35],
 })
 
-// Define external flights map icon
-let externalFlightIcon = L.icon({
+// Define clicked flights map icon
+let clickedFlightIcon = L.icon({
     iconUrl: 'https://img.icons8.com/dusk/64/000000/airport.png',
     iconSize: [38, 38],
 })
@@ -35,12 +35,6 @@ L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYe
 mymap.on('click', onMapClick);
 
 
-let myIconReplc = L.Icon.extend({
-    options: {
-        iconUrl: "images/plan.png",
-        iconSize: [38, 95] // size of the icon
-    }
-});
 
 GetData();
 
@@ -78,15 +72,21 @@ function SendData(data) {
 
 // Function to remove clicked mark 
 function removeMarker(marker) {
-    mymap.removeLayer(marker);
+    if (marker != undefined && marker != null) {
+        mymap.removeLayer(marker);
+    }
 }
 // Function to remove clicked mark route lines
-function deleteLinesFromMap() {
-    mymap.removeLayer(polylines); 
+function DeleteLinesFromMap() {
+    if (polylines != undefined && polylines != null) {
+        mymap.removeLayer(polylines);
+    }
 }
 // Function to remove clicked mark table light light up.
 function removeMarkerLine() {
-    clickedMarkerLine.style.backgroundColor = "aliceblue";
+    if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
+        clickedMarkerLine.style.backgroundColor = "aliceblue";
+    }
 }
 // Function to empty info table
 function resetInfoTable() {
@@ -100,7 +100,7 @@ function resetInfoTable() {
 function onMapClick() {
     if (isMarkerClicked) {
         clickedMarker.setIcon(flightIcon);
-        deleteLinesFromMap();
+        DeleteLinesFromMap();
         removeMarkerLine();
         resetInfoTable();
 
@@ -112,12 +112,16 @@ function onMapClick() {
 }
 
 // Mark the right line in the table
-function markTableLine(id) {
+function MarkTableLine(id) {
     if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
         removeMarkerLine();
     }
+    // Getting new flight table element
     clickedMarkerLine = document.getElementById(id);
-    clickedMarkerLine.style.backgroundColor = "rgb(204, 217, 255)";
+    if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
+        clickedMarkerLine.style.backgroundColor = "rgb(204, 217, 255)";
+    }
+    
 }
 
 // This function fill the clicked flight info table
@@ -155,7 +159,7 @@ function fillFlightInfoTable(data) {
 function drawFlightLines(data) {
     // Remove all lines
     if (latlngs.length > 0 && polylines != undefined) {
-        deleteLinesFromMap()
+        DeleteLinesFromMap()
     }
     // Free old data
     while (latlngs.length > 0) {
@@ -173,24 +177,29 @@ function drawFlightLines(data) {
 }
 
 // This function Handle the click on idon event
-function initialClickedEvent(data, id) {
+function initialClickedEvent(data, id, marker) {
+    let prevClickedMarker = clickedMarker;
     isMarkerClicked = true;
+    clickedMarker = marker;
     // If this marker last clicked , no need to initial again.
     if (id == clickedMarkerId) {
         return;
     } else {
+        if (prevClickedMarker != undefined) {
+            prevClickedMarker.setIcon(flightIcon);
+        }
         clickedMarkerId = id;
-        clickedMarker.setIcon(externalFlightIcon);
-        markTableLine(id);
+        clickedMarker.setIcon(clickedFlightIcon);
+        MarkTableLine(id);
         fillFlightInfoTable(data);
         drawFlightLines(data);
     }
 }
 
 
-function getFlightPlan(id) {
+function getFlightPlan(id,marker) {
     try {
-        GetSingleFlightData(id).then(value => initialClickedEvent(value,id));
+        GetSingleFlightData(id).then(value => initialClickedEvent(value,id,marker));
     } catch (error) {
         console.log(error);
     }
@@ -223,9 +232,8 @@ function DrawIcons(data) {
             
             // Mark click event handler anonymouse function
             marker.on('click', function () {
-                clickedMarker = marker;
                 // This function handle the click mark event logic.
-                getFlightPlan(id);
+                getFlightPlan(id,marker);
             });
 
             // Add marker to map
@@ -250,6 +258,14 @@ function DrawIcons(data) {
             mymap.removeLayer(iconFlightsDict[flight]);
         }
     }
+    if (!flightsID.includes(clickedMarkerId)) {
+        ResetClickedFinishedFlight();
+    }
+}
+
+function ResetClickedFinishedFlight(marker) {
+    DeleteLinesFromMap();
+    resetInfoTable()
 }
 
 // Display the flights in the corresponding tables.
@@ -288,8 +304,8 @@ function DisplayFlights(data) {
             row.id = id;
             row.addEventListener("click", function () {
                 // The clicked merker sets to be the row's corresponding marker.
-                clickedMarker = iconFlightsDict[row.id];
-                getFlightPlan(id);
+                //clickedMarker = iconFlightsDict[row.id];
+                getFlightPlan(id, iconFlightsDict[row.id]);
             });
             let cell1 = row.insertCell(0);
             cell1.innerHTML = id;
@@ -343,19 +359,19 @@ function PostData() {
         "company_name": "SwissAir",
         "initial_location": {
             "longitude": 35,
-            "latitude": 20.9,
-            "date_time": "2020-05-27T12:20:00Z"
+            "latitude": 31.9,
+            "date_time": "2020-05-27T19:43:00Z"
         },
         "segments": [
             {
-                "longitude": 39,
-                "latitude": 25,
-                "timespan_seconds": 20.0
+                "longitude": 36,
+                "latitude": 30,
+                "timespan_seconds": 15.0
             }, 
             {
-                "longitude": 43,
-                "latitude": 27.8,
-                "timespan_seconds": 10.0
+                "longitude": 37,
+                "latitude": 29.8,
+                "timespan_seconds": 15.0
             }
         ]
     };
@@ -369,20 +385,20 @@ function PostData() {
         "passengers": 150,
         "company_name": "SwissAir",
         "initial_location": {
-            "longitude": 35.5,
-            "latitude": 20.7,
-            "date_time": "2020-05-27T12:20:20Z"
+            "longitude": 31.5,
+            "latitude": 28.7,
+            "date_time": "2020-05-27T19:43:00Z"
         },
         "segments": [
             {
-                "longitude": 37.5,
-                "latitude": 31.7,
-                "timespan_seconds": 20.0
+                "longitude": 30.5,
+                "latitude": 27.7,
+                "timespan_seconds": 15.0
             },
             {
-                "longitude": 38.5,
-                "latitude": 33,
-                "timespan_seconds": 10.0
+                "longitude": 27.5,
+                "latitude": 26,
+                "timespan_seconds": 15.0
             }
         ]
     };
@@ -398,18 +414,18 @@ function PostData() {
         "initial_location": {
             "longitude": 35.0,
             "latitude": 32.0,
-            "date_time": "2020-05-27T12:20:00Z"
+            "date_time": "2020-05-27T17:46:00Z"
         },
         "segments": [
             {
                 "longitude": 35,
                 "latitude": 34,
-                "timespan_seconds": 10.0
+                "timespan_seconds": 30.0
             },
             {
                 "longitude": 36,
                 "latitude": 34.6,
-                "timespan_seconds": 7.0
+                "timespan_seconds": 25.0
             }
         ]
     };
