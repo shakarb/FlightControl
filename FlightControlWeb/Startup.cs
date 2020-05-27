@@ -56,10 +56,12 @@ namespace FlightControlWeb
             });
             List<Server> serversList = new List<Server>();
             List<string> keysList = new List<string>();
-            Dictionary<string, FlightPlan> outerFP = new Dictionary<string, FlightPlan>();
+            Dictionary<string, string> serverOf = new Dictionary<string, string>();
+            //Dictionary<string, FlightPlan> outerFP = new Dictionary<string, FlightPlan>();
             cache.Set("servers", serversList);
             cache.Set("keys", keysList);
-            cache.Set("outerFlightPlans", outerFP);
+            cache.Set("serverOfIds", serverOf);
+            //cache.Set("outerFlightPlans", outerFP);
         }
     }
 }

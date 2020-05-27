@@ -1,4 +1,3 @@
-
 var uploadButton = document.getElementById('inputFiles');
 
 function sendData(jsonData) {
@@ -50,4 +49,3 @@ uploadButton.onchange = function (event) {
     }
     event.target.value = '';
 };
-

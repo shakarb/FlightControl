@@ -43,7 +43,7 @@ GetData();
 
 setInterval(function () {
     GetData();
-}, 250);
+}, 1250);
 // Gets data from the server 4 times in a second and pass it's value.
 function GetData() {
     try {
@@ -314,6 +314,7 @@ function DisplayFlights(data) {
             let cell3 = row.insertCell(2);
             cell3.innerHTML = airLine;
             cell1.style = cell2.style = cell3.style = "font-size : x-small";
+            
             if (data[i]["is_external"] === false) {
                 let cell4 = row.insertCell(3);
                 let x = document.createElement("input");
@@ -332,7 +333,7 @@ function DisplayFlights(data) {
 }
 
 function ChooseAction(id) {
-    if (isMarkerClicked) {
+    if (isMarkerClicked && clickedMarkerId == id) {
         onMapClick();
     } else {
         EraseFlight(id);
@@ -346,9 +347,7 @@ function EraseFlight(id) {
         .then(res => console.log(res))
 }
 
-/*
- * PostData is only for testing.
- */
+ // PostData is only for testing.
 function PostData() {
     let req1 = new XMLHttpRequest();
     //req1.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
@@ -359,8 +358,8 @@ function PostData() {
         "company_name": "SwissAir",
         "initial_location": {
             "longitude": 35,
-            "latitude": 31.9,
-            "date_time": "2020-05-27T19:43:00Z"
+            "latitude": 20.9,
+            "date_time": "2020-05-27T21:17:00Z"
         },
         "segments": [
             {
@@ -387,7 +386,7 @@ function PostData() {
         "initial_location": {
             "longitude": 31.5,
             "latitude": 28.7,
-            "date_time": "2020-05-27T19:43:00Z"
+            "date_time": "2020-05-27T21:17:00Z"
         },
         "segments": [
             {
@@ -414,7 +413,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35.0,
             "latitude": 32.0,
-            "date_time": "2020-05-27T17:46:00Z"
+            "date_time": "2020-05-27T21:17:00Z"
         },
         "segments": [
             {

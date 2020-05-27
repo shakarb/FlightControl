@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using FlightControlWeb.Model;
 using System.Collections;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace FlightControlWeb.Controllers
 {
@@ -33,7 +36,7 @@ namespace FlightControlWeb.Controllers
             return Ok(keysList.Count());
         }
 
-
+        /*
         // GET: api/FlightPlan/id
         [HttpGet("{id}", Name = "Get")]
         public ActionResult<FlightPlan> Get(string id)
@@ -50,6 +53,37 @@ namespace FlightControlWeb.Controllers
                 {
                     return NotFound(id);
                 }
+                return Ok(flightPlan);
+            }
+            // Returns 200 status code.
+            return Ok(fp);
+        }*/
+
+        // GET: api/FlightPlan/id
+        [HttpGet("{id}", Name = "Get")]
+        public async Task<ActionResult<FlightPlan>> Get(string id)
+        {
+            bool isOk = cache.TryGetValue(id, out FlightPlan fp);
+            if (!isOk)
+            {
+                // Check if it's an external flight plan.
+                // Then - return it.
+                Dictionary<string, string> serverOf =
+                   (Dictionary<string, string>)cache.Get("serverOfIds");
+                bool ok = serverOf.TryGetValue(id, out string url);
+                if (!ok)
+                {
+                    return NotFound(id);
+                }
+                // Make a http client.
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Add("User-Agent", "C# console program");
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+                // Geting the flight plan from the server.
+                var resp = await client.GetStringAsync("/api/FlightPlan/" + id);
+                FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(resp);
                 return Ok(flightPlan);
             }
             // Returns 200 status code.

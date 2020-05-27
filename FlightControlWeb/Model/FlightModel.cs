@@ -8,6 +8,7 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+//using System.Threading;
 
 namespace FlightControlWeb.Model
 {
@@ -81,7 +82,8 @@ namespace FlightControlWeb.Model
                     var resp = await client.GetStringAsync(server.Url + "/api/Flights?relative_to="
                         + currentTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                     outerFlights.AddRange(JsonConvert.DeserializeObject<List<Flight>>(resp));
-                    GetFlightPlans(outerFlights,server.Url, client);
+                    //GetFlightPlans(outerFlights,server.Url, client);
+                    SaveUrlOfId(outerFlights, server.Url);
                 }
                 catch (Exception)
                 {
@@ -114,7 +116,7 @@ namespace FlightControlWeb.Model
             }
             return null;
         }
-
+        /*
         private async void GetFlightPlans(List<Flight> flights, string url, HttpClient client)
         {
             // Get the flight plan's dictionary from the cache.
@@ -124,6 +126,7 @@ namespace FlightControlWeb.Model
             {
                 if(!outerFP.ContainsKey(flight.Flight_id))
                 {
+                    //Thread.Sleep(1001);
                     // Geting the flight plan from the server.
                     var resp = await client.GetStringAsync(url + "/api/FlightPlan/"
                         + flight.Flight_id.ToString());
@@ -135,6 +138,21 @@ namespace FlightControlWeb.Model
             }
             cache.Set("outerFlightPlans", outerFP);
         }
-
+        */
+        private void SaveUrlOfId(List<Flight> flights, string url)
+        {
+            // Get the flight plan's dictionary from the cache.
+            Dictionary<string, string> serverOf =
+                   (Dictionary<string, string>)cache.Get("serverOfIds");
+            foreach (Flight flight in flights)
+            {
+                if (!serverOf.ContainsKey(flight.Flight_id))
+                {
+                    // Insert the flight plan into the outer flight plans dictionary.
+                    serverOf[flight.Flight_id] = url;
+                }
+            }
+            cache.Set("serverOfIds", serverOf);
+        }
     }
 }
