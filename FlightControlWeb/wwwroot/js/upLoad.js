@@ -4,6 +4,15 @@ function sendData(jsonData) {
     //out http request
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/FlightPlan", true);
+    xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 400) {
+            let ourData = JSON.parse(xhr.responseText);
+            //renderHTML(ourData);
+        }
+        else {
+            alert("Error occur in the JSON file, Fix your JSON!.")
+        }
+    }
     //define the needed header information
     xhr.setRequestHeader("Content-Type", "application/json");
     //sendig our jason
@@ -11,8 +20,6 @@ function sendData(jsonData) {
 };
 
 function readFile(file) {
-    console.log('on eadFile');
-
     //we define a reader to read input file
     let reader = new FileReader();
     //read file as text
@@ -37,7 +44,6 @@ function readFile(file) {
 
 //this function first iterate our files and send them to read file function
 uploadButton.onchange = function (event) {
-    console.log('on OnChnge');
     let files = uploadButton.files;
     let file;
 
