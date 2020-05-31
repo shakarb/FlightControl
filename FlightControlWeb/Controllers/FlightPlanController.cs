@@ -59,7 +59,7 @@ namespace FlightControlWeb.Controllers
             return Ok(fp);
         }*/
 
-        // GET: api/FlightPlan/id
+        // GET: api/FlightPlan/id.
         [HttpGet("{id}", Name = "Get")]
         public async Task<ActionResult<FlightPlan>> Get(string id)
         {
@@ -75,7 +75,7 @@ namespace FlightControlWeb.Controllers
                 {
                     return NotFound(id);
                 }
-                // Make a http client.
+                // Create http client.
                 HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Add("User-Agent", "C# console program");
@@ -90,20 +90,24 @@ namespace FlightControlWeb.Controllers
             return Ok(fp);
         }
 
-        // POST: api/FlightPlan
+        // POST: api/FlightPlan.
         [HttpPost]
         public ActionResult Post([FromBody] FlightPlan fpDetails)
         {
-            string key = fpDetails.GenerateId();
-            cache.Set(key, fpDetails);
-
-            // Updating the keys list with a new key.
-            var keysList = (List<string>)cache.Get("keys");
-            keysList.Add(key);
-            cache.Set("keys", keysList);
-
-            return CreatedAtAction(actionName: "Get", new { id = key }, fpDetails);
+            if (ModelState.IsValid)
+            {
+                string key = fpDetails.GenerateId();
+                cache.Set(key, fpDetails);
+                // Updating the keys list with a new key.
+                var keysList = (List<string>)cache.Get("keys");
+                keysList.Add(key);
+                cache.Set("keys", keysList);
+                // Save the flight id in the response headers (for testing it).
+                HttpContext.Response.Headers["Location"] = key;
+                var resp = CreatedAtAction(actionName: "Get", new { id = key }, fpDetails);
+                return resp;
+            } 
+            return BadRequest("Not a valid flight plan");    
         }
-
     }
 }

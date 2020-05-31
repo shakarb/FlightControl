@@ -12,7 +12,7 @@ namespace FlightControlWeb.Model
     public class Server
     {
         // Properties defenitions.
-        // Mark required for all fields.
+        // Mark all fields as required.
         [JsonProperty(Required = Required.Always)]
         [JsonPropertyName("ServerId")]
         public string Id { get; set; }

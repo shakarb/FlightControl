@@ -8,19 +8,21 @@ using System.Security.Permissions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
-//using System.Threading;
 
 namespace FlightControlWeb.Model
 {
     public class FlightModel
     {
         private IMemoryCache cache;
+        private HttpClient client;
 
-        public FlightModel(IMemoryCache cache)
+        public FlightModel(IMemoryCache cache, HttpClient client)
         {
             this.cache = cache;
+            this.client = client;
         }
 
+        // Returns the server's internal flights.
         public List<Flight> GetOurFlights(DateTime currentTime)
         {
             List<Flight> flights = new List<Flight>();
@@ -39,7 +41,9 @@ namespace FlightControlWeb.Model
                 {
                     continue;
                 }
-                double precent = (currentTime - startTime).TotalSeconds / currSegment.Timespan_seconds;
+                double precent = (currentTime - startTime).TotalSeconds / 
+                    currSegment.Timespan_seconds;
+                // Prepare the details of the new flight.
                 Flight newFlight = new Flight();
                 double prevLon, prevLat;
                 if (segNum == 0)
@@ -71,7 +75,6 @@ namespace FlightControlWeb.Model
             List<Server> serversList = (List<Server>)cache.Get("servers");
             foreach (Server server in serversList)
             {
-                HttpClient client = new HttpClient();
                 client.BaseAddress = new Uri(server.Url);
                 client.DefaultRequestHeaders.Add("User-Agent", "C# console program");
                 client.DefaultRequestHeaders.Accept.Add(
@@ -82,7 +85,6 @@ namespace FlightControlWeb.Model
                     var resp = await client.GetStringAsync(server.Url + "/api/Flights?relative_to="
                         + currentTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                     outerFlights.AddRange(JsonConvert.DeserializeObject<List<Flight>>(resp));
-                    //GetFlightPlans(outerFlights,server.Url, client);
                     SaveUrlOfId(outerFlights, server.Url);
                 }
                 catch (Exception)
@@ -99,8 +101,9 @@ namespace FlightControlWeb.Model
 
 
         // Finds which segment of the flight plan contains the given time.
-        // Curr will be the start time of the segment.
-        private Segment FindSegment(FlightPlan fp, DateTime time, ref DateTime curr, ref int segNum)
+        // Curr is the start time of the segment.
+        private Segment FindSegment(FlightPlan fp, DateTime time, ref DateTime curr, 
+                                            ref int segNum)
         {
             foreach (Segment segment in fp.Segments)
             {
@@ -139,6 +142,8 @@ namespace FlightControlWeb.Model
             cache.Set("outerFlightPlans", outerFP);
         }
         */
+
+        // Saves for each flight the corresponding url.
         private void SaveUrlOfId(List<Flight> flights, string url)
         {
             // Get the flight plan's dictionary from the cache.

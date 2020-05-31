@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-//using System.Web.Script.Serialization;
 using FlightControlWeb.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,7 +21,7 @@ namespace FlightControlWeb.Controllers
             this.cache = cache;
         }
 
-        // GET: api/Servers
+        // GET: api/Servers.
         [HttpGet (Name = "GetServ")]
         public ActionResult<List<Server>> GetServ()
         {
@@ -35,18 +34,21 @@ namespace FlightControlWeb.Controllers
             return Ok(servList);
         }
 
-        // POST: api/Servers
+        // POST: api/Servers.
         [HttpPost]
         public ActionResult Post([FromBody] Server serverDetails)
         {
-            var servList = ((IEnumerable<Server>)cache.Get("servers")).ToList();
-            servList.Add(serverDetails);
-            cache.Set("servers", servList);
-            return CreatedAtAction(actionName: "GetServ", serverDetails);
-
+            if (ModelState.IsValid)
+            {
+                var servList = ((IEnumerable<Server>)cache.Get("servers")).ToList();
+                servList.Add(serverDetails);
+                cache.Set("servers", servList);
+                return CreatedAtAction(actionName: "GetServ", serverDetails);
+            }
+            return BadRequest("Not a valid server");
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/ApiWithActions/5.
         [HttpDelete("{id}")]
         public ActionResult Delete(string id)
         {
@@ -54,7 +56,8 @@ namespace FlightControlWeb.Controllers
             servList.RemoveAll(s => s.Id.Equals(id));
             cache.Set("servers", servList);
             // Returns 204 status code which means that the server has successfully fulfilled 
-            // the request and that there is no additional content to send in the response payload body.
+            // the request and that there is no additional content to send in the 
+            // response payload body.
             return NoContent();
         }
     }
