@@ -34,14 +34,15 @@ namespace FlightControlWeb.Controllers
         // GET: api/Flights?relative_to=<DATE_TIME>.
         // GET: api/Flights?relative_to=<DATE_TIME>&sync_all.
         [HttpGet]
-        public async Task<ActionResult<List<Flight>>> Get(DateTime relative_to)
+        public async Task<ActionResult<List<Flight>>> Get([FromQuery(Name ="relative_to")]
+                                                            DateTime relativeTo)
         {
-            relative_to = relative_to.ToUniversalTime();
+            relativeTo = relativeTo.ToUniversalTime();
             if (Request.Query.ContainsKey("sync_all"))
             {
-                return Ok(await model.GetAllFlights(relative_to));
+                return Ok(await model.GetAllFlights(relativeTo));
             }
-            return Ok(this.model.GetOurFlights(relative_to));
+            return Ok(this.model.GetOurFlights(relativeTo));
         }
 
         // DELETE: api/Flights/5.
