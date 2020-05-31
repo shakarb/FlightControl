@@ -40,6 +40,8 @@ namespace FlightControlWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (serverDetails.Url.EndsWith("/"))
+                    serverDetails.Url = serverDetails.Url.Remove(serverDetails.Url.Length - 1);
                 var servList = ((IEnumerable<Server>)cache.Get("servers")).ToList();
                 servList.Add(serverDetails);
                 cache.Set("servers", servList);

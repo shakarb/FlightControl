@@ -89,7 +89,6 @@ namespace FlightControlWeb.Model
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Failed in external flight get response");
                 }
                 foreach (Flight flight in outerFlights)
                     flight.Is_external = true;
@@ -119,31 +118,7 @@ namespace FlightControlWeb.Model
             }
             return null;
         }
-        /*
-        private async void GetFlightPlans(List<Flight> flights, string url, HttpClient client)
-        {
-            // Get the flight plan's dictionary from the cache.
-            Dictionary<string, FlightPlan> outerFP =
-                   (Dictionary<string, FlightPlan>)cache.Get("outerFlightPlans");
-            foreach (Flight flight in flights)
-            {
-                if(!outerFP.ContainsKey(flight.Flight_id))
-                {
-                    //Thread.Sleep(1001);
-                    // Geting the flight plan from the server.
-                    var resp = await client.GetStringAsync(url + "/api/FlightPlan/"
-                        + flight.Flight_id.ToString());
-                    FlightPlan fp = JsonConvert.DeserializeObject<FlightPlan>(resp);
 
-                    // Insert the flight plan into the outer flight plans dictionary.
-                    outerFP[flight.Flight_id] = fp;
-                }
-            }
-            cache.Set("outerFlightPlans", outerFP);
-        }
-        */
-
-        // Saves for each flight the corresponding url.
         private void SaveUrlOfId(List<Flight> flights, string url)
         {
             // Get the flight plan's dictionary from the cache.

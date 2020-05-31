@@ -75,16 +75,24 @@ namespace FlightControlWeb.Controllers
                 {
                     return NotFound(id);
                 }
-                // Create http client.
-                HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Add("User-Agent", "C# console program");
-                client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
-                // Geting the flight plan from the server.
-                var resp = await client.GetStringAsync("/api/FlightPlan/" + id);
-                FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(resp);
-                return Ok(flightPlan);
+                try
+                {
+                    // Create http client.
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri(url);
+                    client.DefaultRequestHeaders.Add("User-Agent", "C# console program");
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
+                    // Geting the flight plan from the server.
+                    var resp = await client.GetStringAsync("/api/FlightPlan/" + id);
+                    FlightPlan flightPlan = JsonConvert.DeserializeObject<FlightPlan>(resp);
+                    return Ok(flightPlan);
+                }
+                catch (Exception)
+                {
+                    return NotFound(id);
+                }
+
             }
             // Returns 200 status code.
             return Ok(fp);

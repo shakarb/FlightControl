@@ -288,25 +288,51 @@ function DisplayFlights(data) {
             writtenFlights.splice(index, 1);
         }
     }
-
     for (let i = 0; i < data.length; i++) {
         let id = data[i]["flight_id"];
-        if (!(writtenFlights.includes(id))) {
+        // If the flight id is written already - we dont do anything.
+        if (!(writtenFlights.includes(id)) && data[i]["is_external"] === false) {
             writtenFlights.push(id);
             let airLine = data[i]["company_name"];
             let arrivalTime = data[i]["date_time"];
             let date = new Date(arrivalTime);
-            let table;
-            if (data[i]["is_external"] === false) {
-                table = document.getElementById("myFlightsTable").getElementsByTagName('tbody')[0];
-            } else {
-                table = document.getElementById("externalFlightsTable").getElementsByTagName('tbody')[0];
-            }
+            let table = document.getElementById("myFlightsTable").getElementsByTagName('tbody')[0];
             let row = table.insertRow();
             row.id = id;
             row.addEventListener("click", function () {
                 // The clicked merker sets to be the row's corresponding marker.
-                //clickedMarker = iconFlightsDict[row.id];
+                getFlightPlan(id, iconFlightsDict[row.id]);
+            });
+            // Insert cells to the row in the table.
+            let cell1 = row.insertCell(0);
+            cell1.innerHTML = id;
+            let cell2 = row.insertCell(1);
+            cell2.innerHTML = date.toUTCString();
+            let cell3 = row.insertCell(2);
+            cell3.innerHTML = airLine;
+            cell1.style = cell2.style = cell3.style = "font-size : x-small";
+            let cell4 = row.insertCell(3);
+            // the x button:
+            let x = document.createElement("input");
+            x.setAttribute("type", "image");
+            x.setAttribute("src", "images/Red_X.png");
+            x.setAttribute("width", 12);
+            x.setAttribute("height", 12);
+            x.addEventListener("click", function (e) {
+                ChooseAction(id);
+                e.stopPropagation();
+            });
+            cell4.appendChild(x);
+        } else if (!(writtenFlights.includes(id)) && data[i]["is_external"] === true) {
+            writtenFlights.push(id);
+            let airLine = data[i]["company_name"];
+            let arrivalTime = data[i]["date_time"];
+            let date = new Date(arrivalTime);
+            let table = document.getElementById("externalFlightsTable").getElementsByTagName('tbody')[0];
+            let row = table.insertRow();
+            row.id = id;
+            row.addEventListener("click", function () {
+                // The clicked merker sets to be the row's corresponding marker.
                 getFlightPlan(id, iconFlightsDict[row.id]);
             });
             let cell1 = row.insertCell(0);
@@ -316,20 +342,6 @@ function DisplayFlights(data) {
             let cell3 = row.insertCell(2);
             cell3.innerHTML = airLine;
             cell1.style = cell2.style = cell3.style = "font-size : x-small";
-            
-            if (data[i]["is_external"] === false) {
-                let cell4 = row.insertCell(3);
-                let x = document.createElement("input");
-                x.setAttribute("type", "image");
-                x.setAttribute("src", "images/Red_X.png");
-                x.setAttribute("width", 12);
-                x.setAttribute("height", 12);
-                x.addEventListener("click", function (e) {
-                    ChooseAction(id);
-                    e.stopPropagation();
-                });
-                cell4.appendChild(x);
-            }
         }
     }
 }
