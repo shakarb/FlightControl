@@ -50,6 +50,7 @@ function GetData() {
         GetFlightsData().then(value => SendData(value));
     } catch (error) {
         console.log(error);
+        alert("Error on getting flights from server , please refresh and try again");
     }
 }
 
@@ -144,7 +145,7 @@ function fillFlightInfoTable(data) {
         "<th style =\"font-size : x-small\">" + startingLat.toFixed(2) + "," + startingLong.toFixed(2) + "</th>" +
         "<th style =\"font-size : x-small\">" + endLat.toFixed(2) + "," + endLong.toFixed(2)  + "</th>" +
         "<th style =\"font-size : x-small\">" + passengers + "</th>" + 
-        "<th style =\"font-size : x-small\">" + dateTime + "</th>";
+        "<th style =\"font-size : x-small\">" + new Date(dateTime).toUTCString() + "</th>";
 
     let table = document.getElementById("clickedFlight");
     
@@ -202,6 +203,7 @@ function getFlightPlan(id,marker) {
         GetSingleFlightData(id).then(value => initialClickedEvent(value,id,marker));
     } catch (error) {
         console.log(error);
+        alert("Error on clicking icon event , please refresh and try again");
     }
 }
 
