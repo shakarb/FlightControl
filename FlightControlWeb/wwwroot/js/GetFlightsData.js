@@ -1,4 +1,4 @@
-﻿PostData();
+﻿//PostData();
 let iconFlightsDict = {};
 let writtenFlights = [];
 let latlngs = [];
@@ -346,7 +346,7 @@ function EraseFlight(id) {
     })
         .then(res => console.log(res))
 }
-
+/*
  // PostData is only for testing.
 function PostData() {
     let req1 = new XMLHttpRequest();
@@ -359,7 +359,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35,
             "latitude": 20.9,
-            "date_time": "2020-05-27T21:17:00Z"
+            "date_time": "2020-05-30T20:39:00Z"
         },
         "segments": [
             {
@@ -386,7 +386,7 @@ function PostData() {
         "initial_location": {
             "longitude": 31.5,
             "latitude": 28.7,
-            "date_time": "2020-05-27T21:17:00Z"
+            "date_time": "2020-05-30T20:39:00Z"
         },
         "segments": [
             {
@@ -413,7 +413,7 @@ function PostData() {
         "initial_location": {
             "longitude": 35.0,
             "latitude": 32.0,
-            "date_time": "2020-05-27T21:17:00Z"
+            "date_time": "2020-05-30T20:39:00Z"
         },
         "segments": [
             {
@@ -429,4 +429,4 @@ function PostData() {
         ]
     };
     req3.send(JSON.stringify(jsonObject));
-}
+}*/

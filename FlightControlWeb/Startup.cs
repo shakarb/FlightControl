@@ -31,11 +31,18 @@ namespace FlightControlWeb
             services.AddRouting();
             services.AddControllers();
             services.AddMemoryCache();
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IMemoryCache cache)
         {
+            app.UseCors("MyPolicy");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -57,11 +64,9 @@ namespace FlightControlWeb
             List<Server> serversList = new List<Server>();
             List<string> keysList = new List<string>();
             Dictionary<string, string> serverOf = new Dictionary<string, string>();
-            //Dictionary<string, FlightPlan> outerFP = new Dictionary<string, FlightPlan>();
             cache.Set("servers", serversList);
             cache.Set("keys", keysList);
             cache.Set("serverOfIds", serverOf);
-            //cache.Set("outerFlightPlans", outerFP);
         }
     }
 }
