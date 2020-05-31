@@ -1,5 +1,4 @@
-﻿//PostData();
-let iconFlightsDict = {};
+﻿let iconFlightsDict = {};
 let writtenFlights = [];
 let latlngs = [];
 let polylines;
@@ -7,6 +6,26 @@ let clickedMarker;
 let isMarkerClicked;
 let clickedMarkerId;
 let clickedMarkerLine;
+
+
+// Define alert
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-center",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 
 // Define my flights map icon
 let flightIcon = L.icon({
@@ -21,7 +40,7 @@ let clickedFlightIcon = L.icon({
 })
 
 // Initial the map
-var mymap = L.map('mapid').setView([32, 35], 8);
+let mymap = L.map('mapid').setView([32, 35], 8);
 L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYeIDF2PiEdyE', {
     attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     maxZoom: 12,
@@ -34,13 +53,6 @@ L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYe
 // Define map click event handler
 mymap.on('click', onMapClick);
 
-
-
-GetData();
-
-//our map icon definition
-
-
 setInterval(function () {
     GetData();
 }, 1250);
@@ -50,7 +62,7 @@ function GetData() {
         GetFlightsData().then(value => SendData(value));
     } catch (error) {
         console.log(error);
-        alert("Error on getting flights from server , please refresh and try again");
+        toastr["error"]("Error on getting flights from server , please refresh and try again, or check if the server is running")
     }
 }
 
@@ -203,7 +215,7 @@ function getFlightPlan(id,marker) {
         GetSingleFlightData(id).then(value => initialClickedEvent(value,id,marker));
     } catch (error) {
         console.log(error);
-        alert("Error on clicking icon event , please refresh and try again");
+        toastr["error"]("Error on clicking icon event , please refresh and try again")
     }
 }
 
@@ -254,7 +266,7 @@ function DrawIcons(data) {
         //here need to update clicked marker lines
     }
      // Iterate over our flights markers
-    for (var flight in iconFlightsDict) {
+    for (let flight in iconFlightsDict) {
         // If flight no in new flights data need to remove her
         if (!flightsID.includes(flight)) {
             mymap.removeLayer(iconFlightsDict[flight]);

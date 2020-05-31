@@ -10,7 +10,9 @@ function sendData(jsonData) {
             //renderHTML(ourData);
         }
         else {
-            alert("Error occur in the JSON file, Fix your JSON!.")
+            
+            //alert("Status code:" + xhr.status + ". Error occur in the uploaded file, Fix your JSON!. ")
+            toastr["error"]("Status code:" + xhr.status + ". Error occur in the uploaded file, Fix your JSON!. ")
         }
     }
     //define the needed header information
