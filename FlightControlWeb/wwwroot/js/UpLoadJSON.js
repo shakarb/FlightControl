@@ -1,17 +1,13 @@
-var uploadButton = document.getElementById('inputFiles');
+let uploadButton = document.getElementById('inputFiles');
 
-function sendData(jsonData) {
+function sendInputData(jsonData) {
     //out http request
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/FlightPlan", true);
     xhr.onload = function () {
-        if (xhr.status >= 200 && xhr.status < 400) {
-            let ourData = JSON.parse(xhr.responseText);
-            //renderHTML(ourData);
-        }
-        else {
-            
-            //alert("Status code:" + xhr.status + ". Error occur in the uploaded file, Fix your JSON!. ")
+        //means we got an error
+        if (!(xhr.status >= 200 && xhr.status < 400)) {
+            // eslint-disable-next-line no-undef
             toastr["error"]("Status code:" + xhr.status + ". Error occur in the uploaded file, Fix your JSON!. ")
         }
     }
@@ -19,7 +15,7 @@ function sendData(jsonData) {
     xhr.setRequestHeader("Content-Type", "application/json");
     //sendig our jason
     xhr.send(jsonData);
-};
+}
 
 function readFile(file) {
     //we define a reader to read input file
@@ -31,16 +27,16 @@ function readFile(file) {
     //prepare our json data for post
     reader.onload = function () {
         data = reader.result.replace('/r', '');
-        console.log(data);
-        sendData(data);
+        // Sending data to the server function
+        sendInputData(data);
     };
 
     //msg if we got an error
     reader.onerror = function () {
         console.log(reader.error);
     };
-    
-};
+
+}
 
 
 
@@ -49,7 +45,7 @@ uploadButton.onchange = function (event) {
     let files = uploadButton.files;
     let file;
 
-    var x;
+    let x;
 
     for (x = 0; x < files.length; x = x + 1) {
         file = files[x];

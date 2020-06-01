@@ -8,7 +8,8 @@ let clickedMarkerId;
 let clickedMarkerLine;
 
 
-// Define alert
+// Define alert msg
+// eslint-disable-next-line no-undef
 toastr.options = {
     "closeButton": false,
     "debug": false,
@@ -28,19 +29,23 @@ toastr.options = {
 }
 
 // Define my flights map icon
+// eslint-disable-next-line no-undef
 let flightIcon = L.icon({
     iconUrl: 'https://img.icons8.com/plasticine/100/000000/airport.png',
     iconSize: [35, 35],
 })
 
 // Define clicked flights map icon
+// eslint-disable-next-line no-undef
 let clickedFlightIcon = L.icon({
     iconUrl: 'https://img.icons8.com/dusk/64/000000/airport.png',
     iconSize: [38, 38],
 })
 
 // Initial the map
+// eslint-disable-next-line no-undef
 let mymap = L.map('mapid').setView([32, 35], 8);
+// eslint-disable-next-line no-undef
 L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYeIDF2PiEdyE', {
     attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     maxZoom: 12,
@@ -54,20 +59,22 @@ L.tileLayer('https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=hobXqF8UYe
 mymap.on('click', onMapClick);
 
 setInterval(function () {
-    GetData();
+    getData();
 }, 1250);
+
 // Gets data from the server 4 times in a second and pass it's value.
-function GetData() {
+function getData() {
     try {
-        GetFlightsData().then(value => SendData(value));
+        getFlightsData().then(value => sendData(value));
     } catch (error) {
         console.log(error);
+        // eslint-disable-next-line no-undef
         toastr["error"]("Error on getting flights from server , please refresh and try again, or check if the server is running")
     }
 }
 
 // Gets the flights data from the server asynchronously.
-async function GetFlightsData() {
+async function getFlightsData() {
     let date = new Date().toISOString()
     let url = "/api/Flights?relative_to=" + date + "&sync_all";
     //let url = "https://localhost:44355/index.html/api/Flights?relative_to=" + date + "&sync_all";
@@ -77,10 +84,9 @@ async function GetFlightsData() {
 }
 
 // Send the data to specific functions.
-function SendData(data) {
-    DrawIcons(data);
-    DisplayFlights(data);
-
+function sendData(data) {
+    drawIcons(data);
+    displayFlights(data);
 }
 
 // Function to remove clicked mark 
@@ -90,7 +96,7 @@ function removeMarker(marker) {
     }
 }
 // Function to remove clicked mark route lines
-function DeleteLinesFromMap() {
+function deleteLinesFromMap() {
     if (polylines != undefined && polylines != null) {
         mymap.removeLayer(polylines);
     }
@@ -113,7 +119,7 @@ function resetInfoTable() {
 function onMapClick() {
     if (isMarkerClicked) {
         clickedMarker.setIcon(flightIcon);
-        DeleteLinesFromMap();
+        deleteLinesFromMap();
         removeMarkerLine();
         resetInfoTable();
 
@@ -125,7 +131,7 @@ function onMapClick() {
 }
 
 // Mark the right line in the table
-function MarkTableLine(id) {
+function markTableLine(id) {
     if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
         removeMarkerLine();
     }
@@ -134,7 +140,7 @@ function MarkTableLine(id) {
     if (clickedMarkerLine != undefined && clickedMarkerLine != null) {
         clickedMarkerLine.style.backgroundColor = "rgb(204, 217, 255)";
     }
-    
+
 }
 
 // This function fill the clicked flight info table
@@ -155,16 +161,17 @@ function fillFlightInfoTable(data) {
     let s = "<th style =\"font-size : x-small\">" + flightId + "</th>" +
         "<th style =\"font-size : x-small\">" + airLine + "</th>" +
         "<th style =\"font-size : x-small\">" + startingLat.toFixed(2) + "," + startingLong.toFixed(2) + "</th>" +
-        "<th style =\"font-size : x-small\">" + endLat.toFixed(2) + "," + endLong.toFixed(2)  + "</th>" +
-        "<th style =\"font-size : x-small\">" + passengers + "</th>" + 
+        "<th style =\"font-size : x-small\">" + endLat.toFixed(2) + "," + endLong.toFixed(2) + "</th>" +
+        "<th style =\"font-size : x-small\">" + passengers + "</th>" +
         "<th style =\"font-size : x-small\">" + new Date(dateTime).toUTCString() + "</th>";
 
     let table = document.getElementById("clickedFlight");
-    
+
     let newItem = document.createElement('tr');
     newItem.innerHTML = s;
     table.innerHTML = " ";
-    table.append(newItem);}
+    table.append(newItem);
+}
 
 
 
@@ -172,7 +179,7 @@ function fillFlightInfoTable(data) {
 function drawFlightLines(data) {
     // Remove all lines
     if (latlngs.length > 0 && polylines != undefined) {
-        DeleteLinesFromMap()
+        deleteLinesFromMap()
     }
     // Free old data
     while (latlngs.length > 0) {
@@ -183,9 +190,10 @@ function drawFlightLines(data) {
     latlngs.push([data["initial_location"]["latitude"], data["initial_location"]["longitude"]]);
     // Pushing segments points
     for (let i = 0; i < segArray.length; i++) {
-        latlngs.push([segArray[i]["latitude"],segArray[i]["longitude"]]);
+        latlngs.push([segArray[i]["latitude"], segArray[i]["longitude"]]);
     }
 
+    // eslint-disable-next-line no-undef
     polylines = L.polyline(latlngs, { color: 'lightgrey' }).addTo(mymap);
 }
 
@@ -203,24 +211,25 @@ function initialClickedEvent(data, id, marker) {
         }
         clickedMarkerId = id;
         clickedMarker.setIcon(clickedFlightIcon);
-        MarkTableLine(id);
+        markTableLine(id);
         fillFlightInfoTable(data);
         drawFlightLines(data);
     }
 }
 
 
-function getFlightPlan(id,marker) {
+function getFlightPlan(id, marker) {
     try {
-        GetSingleFlightData(id).then(value => initialClickedEvent(value,id,marker));
+        getSingleFlightData(id).then(value => initialClickedEvent(value, id, marker));
     } catch (error) {
         console.log(error);
+        // eslint-disable-next-line no-undef
         toastr["error"]("Error on clicking icon event , please refresh and try again")
     }
 }
 
 // Gets the flight data from the server asynchronously.
-async function GetSingleFlightData(id) {
+async function getSingleFlightData(id) {
     let url = "/api/FlightPlan/" + id;
     let resp = await fetch(url);
     let FlightData = await resp.json();
@@ -228,8 +237,8 @@ async function GetSingleFlightData(id) {
 }
 
 // Draws the icon for every flight.
-function DrawIcons(data) {
-     let flightsID = [];
+function drawIcons(data) {
+    let flightsID = [];
 
     for (let i = 0; i < data.length; i++) {
         // Getting marker point data
@@ -240,50 +249,44 @@ function DrawIcons(data) {
             iconFlightsDict[data[i]["flight_id"]].setLatLng([lat, lon]);
         } else {
 
+            // eslint-disable-next-line no-undef
             let marker = L.marker([lat, lon], { icon: flightIcon });
-            
+
             let id = data[i]["flight_id"];
-            
+
             // Mark click event handler anonymouse function
             marker.on('click', function () {
                 // This function handle the click mark event logic.
-                getFlightPlan(id,marker);
+                getFlightPlan(id, marker);
             });
 
             // Add marker to map
             marker.addTo(mymap);
-            //marker.setIcon(externalFlightIcon);
-           
+            
             iconFlightsDict[data[i]["flight_id"]] = marker;
-                
-            //console.log(data[i]["flight_id"]);
-            //markerIdDict[marker] = data[i]["flight_id"];
         }
         flightsID.push(data[i]["flight_id"]);
     }
 
-    if (isMarkerClicked == true) {
-        //here need to update clicked marker lines
-    }
-     // Iterate over our flights markers
-    for (let flight in iconFlightsDict) {
+    // Iterate over our flights markers
+    for (let id in iconFlightsDict) {
         // If flight no in new flights data need to remove her
-        if (!flightsID.includes(flight)) {
-            mymap.removeLayer(iconFlightsDict[flight]);
+        if (!flightsID.includes(id)) {
+            removeMarker(iconFlightsDict[id]);
         }
     }
     if (!flightsID.includes(clickedMarkerId)) {
-        ResetClickedFinishedFlight();
+        resetClickedFinishedFlight();
     }
 }
 
-function ResetClickedFinishedFlight(marker) {
-    DeleteLinesFromMap();
+function resetClickedFinishedFlight() {
+    deleteLinesFromMap();
     resetInfoTable()
 }
 
 // Display the flights in the corresponding tables.
-function DisplayFlights(data) {
+function displayFlights(data) {
     // CuurentFlights will contain all the flight's ids that in data.
     let currentFlights = [];
     for (let i = 0; i < data.length; i++) {
@@ -331,7 +334,7 @@ function DisplayFlights(data) {
             x.setAttribute("width", 12);
             x.setAttribute("height", 12);
             x.addEventListener("click", function (e) {
-                ChooseAction(id);
+                chooseAction(id);
                 e.stopPropagation();
             });
             cell4.appendChild(x);
@@ -358,101 +361,17 @@ function DisplayFlights(data) {
     }
 }
 
-function ChooseAction(id) {
+function chooseAction(id) {
     if (isMarkerClicked && clickedMarkerId == id) {
         onMapClick();
     } else {
-        EraseFlight(id);
+        eraseFlight(id);
     }
 }
 
-function EraseFlight(id) {
+function eraseFlight(id) {
     fetch('/api/Flights/' + id, {
         method: 'DELETE',
     })
         .then(res => console.log(res))
 }
-/*
- // PostData is only for testing.
-function PostData() {
-    let req1 = new XMLHttpRequest();
-    //req1.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req1.open("POST", "/api/FlightPlan", false);
-    req1.setRequestHeader("Content-Type", "application/json");
-    let jsonObject = {
-        "passengers": 150,
-        "company_name": "SwissAir",
-        "initial_location": {
-            "longitude": 35,
-            "latitude": 20.9,
-            "date_time": "2020-05-30T20:39:00Z"
-        },
-        "segments": [
-            {
-                "longitude": 36,
-                "latitude": 30,
-                "timespan_seconds": 15.0
-            }, 
-            {
-                "longitude": 37,
-                "latitude": 29.8,
-                "timespan_seconds": 15.0
-            }
-        ]
-    };
-    req1.send(JSON.stringify(jsonObject));
-
-    let req2 = new XMLHttpRequest();
-    //req2.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req2.open("POST", "/api/FlightPlan", false);
-    req2.setRequestHeader("Content-Type", "application/json");
-    jsonObject = {
-        "passengers": 150,
-        "company_name": "SwissAir",
-        "initial_location": {
-            "longitude": 31.5,
-            "latitude": 28.7,
-            "date_time": "2020-05-30T20:39:00Z"
-        },
-        "segments": [
-            {
-                "longitude": 30.5,
-                "latitude": 27.7,
-                "timespan_seconds": 15.0
-            },
-            {
-                "longitude": 27.5,
-                "latitude": 26,
-                "timespan_seconds": 15.0
-            }
-        ]
-    };
-    req2.send(JSON.stringify(jsonObject));
-
-    let req3 = new XMLHttpRequest();
-    //req3.open("POST", "https://localhost:44355/index.html/api/FlightPlan", false);
-    req3.open("POST", "/api/FlightPlan", false);
-    req3.setRequestHeader("Content-Type", "application/json");
-    jsonObject = {
-        "passengers": 150,
-        "company_name": "SwissAir",
-        "initial_location": {
-            "longitude": 35.0,
-            "latitude": 32.0,
-            "date_time": "2020-05-30T20:39:00Z"
-        },
-        "segments": [
-            {
-                "longitude": 35,
-                "latitude": 34,
-                "timespan_seconds": 30.0
-            },
-            {
-                "longitude": 36,
-                "latitude": 34.6,
-                "timespan_seconds": 25.0
-            }
-        ]
-    };
-    req3.send(JSON.stringify(jsonObject));
-}*/
