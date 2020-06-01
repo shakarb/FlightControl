@@ -24,41 +24,6 @@ namespace FlightControlWeb.Controllers
             this.cache = cache;
         }
 
-        /*
-         * for testing
-         */
-        // GET: api/FlightPlan/listSize
-        [HttpGet("listSize")]
-        public ActionResult<int> Get()
-        {
-            var keysList = (List<string>)cache.Get("keys");
-            // Returns 200 status code.
-            return Ok(keysList.Count());
-        }
-
-        /*
-        // GET: api/FlightPlan/id
-        [HttpGet("{id}", Name = "Get")]
-        public ActionResult<FlightPlan> Get(string id)
-        {
-            bool isOk = cache.TryGetValue(id, out FlightPlan fp);
-            if (!isOk)
-            {
-                // Check if it's an external flight plan.
-                // Then - return it.
-                Dictionary<string, FlightPlan> outerFP =
-                   (Dictionary<string, FlightPlan>)cache.Get("outerFlightPlans");
-                bool ok = outerFP.TryGetValue(id, out FlightPlan flightPlan);
-                if (!ok)
-                {
-                    return NotFound(id);
-                }
-                return Ok(flightPlan);
-            }
-            // Returns 200 status code.
-            return Ok(fp);
-        }*/
-
         // GET: api/FlightPlan/id.
         [HttpGet("{id}", Name = "Get")]
         public async Task<ActionResult<FlightPlan>> Get(string id)
