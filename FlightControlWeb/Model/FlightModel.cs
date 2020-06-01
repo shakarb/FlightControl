@@ -30,7 +30,7 @@ namespace FlightControlWeb.Model
             foreach (string key in keysList)
             {
                 FlightPlan fp = (FlightPlan)cache.Get(key);
-                DateTime startTime = fp.Initial_location.Date_time;
+                DateTime startTime = fp.InitialLocation.DateTime;
                 if (currentTime < startTime)
                 {
                     continue;
@@ -42,14 +42,14 @@ namespace FlightControlWeb.Model
                     continue;
                 }
                 double precent = (currentTime - startTime).TotalSeconds / 
-                    currSegment.Timespan_seconds;
+                    currSegment.TimespanSeconds;
                 // Prepare the details of the new flight.
                 Flight newFlight = new Flight();
                 double prevLon, prevLat;
                 if (segNum == 0)
                 {
-                    prevLon = fp.Initial_location.Longitude;
-                    prevLat = fp.Initial_location.Latitude;
+                    prevLon = fp.InitialLocation.Longitude;
+                    prevLat = fp.InitialLocation.Latitude;
                 }
                 else
                 {
@@ -58,11 +58,11 @@ namespace FlightControlWeb.Model
                 }
                 newFlight.Longitude = prevLon + (currSegment.Longitude - prevLon) * precent;
                 newFlight.Latitude = prevLat + (currSegment.Latitude - prevLat) * precent;
-                newFlight.Flight_id = key;
-                newFlight.Company_name = fp.Company_name;
+                newFlight.FlightId = key;
+                newFlight.CompanyName = fp.CompanyName;
                 newFlight.Passengers = fp.Passengers;
-                newFlight.Is_external = false;
-                newFlight.Date_time = fp.Initial_location.Date_time;
+                newFlight.IsExternal = false;
+                newFlight.DateTime = fp.InitialLocation.DateTime;
                 flights.Add(newFlight);
             }
             return flights;
@@ -91,7 +91,7 @@ namespace FlightControlWeb.Model
                 {
                 }
                 foreach (Flight flight in outerFlights)
-                    flight.Is_external = true;
+                    flight.IsExternal = true;
                 
                 flights.AddRange(outerFlights);
             }
@@ -106,10 +106,10 @@ namespace FlightControlWeb.Model
         {
             foreach (Segment segment in fp.Segments)
             {
-                if ((curr = curr.AddSeconds(segment.Timespan_seconds)) > time)
+                if ((curr = curr.AddSeconds(segment.TimespanSeconds)) > time)
                 {
                     // Make curr to be the start time of the segment.
-                    curr = curr.AddSeconds(-segment.Timespan_seconds);
+                    curr = curr.AddSeconds(-segment.TimespanSeconds);
                     return segment;
                 }else
                 {
@@ -126,10 +126,10 @@ namespace FlightControlWeb.Model
                    (Dictionary<string, string>)cache.Get("serverOfIds");
             foreach (Flight flight in flights)
             {
-                if (!serverOf.ContainsKey(flight.Flight_id))
+                if (!serverOf.ContainsKey(flight.FlightId))
                 {
                     // Insert the flight plan into the outer flight plans dictionary.
-                    serverOf[flight.Flight_id] = url;
+                    serverOf[flight.FlightId] = url;
                 }
             }
             cache.Set("serverOfIds", serverOf);
